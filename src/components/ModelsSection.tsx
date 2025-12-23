@@ -8,36 +8,42 @@ const models = [
     description: "High-quality image generation with exceptional detail",
     tags: ["Fast", "Realistic"],
     featured: false,
+    image: "https://images.unsplash.com/photo-1683009427666-340595e57e43?w=300&q=80",
   },
   {
     name: "FLUX Pro",
     description: "Next-gen model for stunning photorealistic outputs",
     tags: ["Photorealistic", "Premium"],
     featured: true,
+    image: "https://images.unsplash.com/photo-1686904423085-2e9da818e4cf?w=300&q=80",
   },
   {
     name: "Anime Diffusion",
     description: "Perfect for anime and manga-style illustrations",
     tags: ["Anime", "Fast"],
     featured: false,
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300&q=80",
   },
   {
     name: "Creative Mix",
     description: "Artistic and creative interpretations of prompts",
     tags: ["Artistic", "Creative"],
     featured: false,
+    image: "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=300&q=80",
   },
   {
     name: "Cinematic AI",
     description: "Film-quality visuals with dramatic lighting",
     tags: ["Cinematic", "Premium"],
     featured: true,
+    image: "https://images.unsplash.com/photo-1682687982501-1e58ab814714?w=300&q=80",
   },
   {
     name: "Portrait Master",
     description: "Specialized in photorealistic human portraits",
     tags: ["Portraits", "Realistic"],
     featured: false,
+    image: "https://images.unsplash.com/photo-1697577418970-95d99b5a55cf?w=300&q=80",
   },
 ];
 
@@ -80,51 +86,63 @@ const ModelsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`glass-card-glow p-6 relative overflow-hidden group ${
+              className={`glass-card-glow p-0 relative overflow-hidden group ${
                 model.featured ? "ring-1 ring-primary/50" : ""
               }`}
             >
-              {/* Featured badge */}
-              {model.featured && (
-                <div className="absolute top-4 right-4">
-                  <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full">
-                    Featured
-                  </span>
-                </div>
-              )}
-
-              {/* Content */}
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                {model.name}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {model.description}
-              </p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {model.tags.map((tag) => {
-                  const Icon = tagIcons[tag] || Sparkles;
-                  return (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-secondary/50 text-muted-foreground rounded-md border border-border/50"
-                    >
-                      <Icon className="w-3 h-3" />
-                      {tag}
+              {/* Model Preview Image */}
+              <div className="relative h-32 overflow-hidden">
+                <img
+                  src={model.image}
+                  alt={model.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                
+                {/* Featured badge */}
+                {model.featured && (
+                  <div className="absolute top-3 right-3">
+                    <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full">
+                      Featured
                     </span>
-                  );
-                })}
+                  </div>
+                )}
               </div>
 
-              {/* Try button */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full group-hover:border-primary/50 transition-colors"
-              >
-                Try Model
-              </Button>
+              <div className="p-6">
+                {/* Content */}
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {model.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {model.description}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {model.tags.map((tag) => {
+                    const Icon = tagIcons[tag] || Sparkles;
+                    return (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-secondary/50 text-muted-foreground rounded-md border border-border/50"
+                      >
+                        <Icon className="w-3 h-3" />
+                        {tag}
+                      </span>
+                    );
+                  })}
+                </div>
+
+                {/* Try button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full group-hover:border-primary/50 transition-colors"
+                >
+                  Try Model
+                </Button>
+              </div>
             </motion.div>
           ))}
         </div>

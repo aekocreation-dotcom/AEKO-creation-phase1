@@ -1,11 +1,8 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import DemoSection from "@/components/DemoSection";
-import ModelsSection from "@/components/ModelsSection";
-import UseCasesSection from "@/components/UseCasesSection";
-import DevelopersSection from "@/components/DevelopersSection";
+import AskMeAnythingSection from "@/components/AskMeAnythingSection";
+import PlaygroundSection from "@/components/PlaygroundSection";
+import EveryCreatorSection from "@/components/EveryCreatorSection";
 import PricingSection from "@/components/PricingSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
@@ -15,12 +12,9 @@ const Index = () => {
     <main className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
       <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <DemoSection />
-      <ModelsSection />
-      <UseCasesSection />
-      <DevelopersSection />
+      <AskMeAnythingSection />
+      <PlaygroundSection />
+      <EveryCreatorSection />
       <PricingSection />
       <CTASection />
       <Footer />

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Play } from "lucide-react";
+import { MessageSquare, Image, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
@@ -49,7 +50,7 @@ const HeroSection = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
             <span className="text-sm text-muted-foreground">
-              Now with FLUX & Stable Diffusion 3.5
+              Powered by GPT-4, FLUX & Stable Diffusion
             </span>
           </motion.div>
 
@@ -60,8 +61,8 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-7xl font-bold text-foreground mb-6 leading-tight"
           >
-            Create Images & Videos with AI —{" "}
-            <span className="gradient-text">Instantly.</span>
+            Chat Smarter. Create Faster.{" "}
+            <span className="gradient-text">Powered by AI.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -71,25 +72,35 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
           >
-            AEKO brings the world's most powerful AI models together to
-            generate, transform, and animate visuals in one place.
+            All-in-one AI platform for chat, images, and videos — powered by the
+            world's best models.
           </motion.p>
 
-          {/* CTAs */}
+          {/* 3 CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button variant="hero" size="xl" className="group">
-              Start Creating Free
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button variant="glass" size="xl" className="group">
-              <Play className="w-5 h-5" />
-              Explore Models
-            </Button>
+            <Link to="/dashboard/tools">
+              <Button variant="hero" size="xl" className="group gap-2">
+                <MessageSquare className="w-5 h-5" />
+                Chat Agent
+              </Button>
+            </Link>
+            <Link to="/dashboard/tools">
+              <Button variant="glass" size="xl" className="group gap-2">
+                <Image className="w-5 h-5" />
+                Image
+              </Button>
+            </Link>
+            <Link to="/dashboard/tools">
+              <Button variant="glass" size="xl" className="group gap-2">
+                <Video className="w-5 h-5" />
+                Video
+              </Button>
+            </Link>
           </motion.div>
 
           {/* Stats */}
@@ -100,9 +111,9 @@ const HeroSection = () => {
             className="flex items-center justify-center gap-8 md:gap-16 mt-16 pt-8 border-t border-border/30"
           >
             {[
-              { value: "2M+", label: "Creations" },
+              { value: "5M+", label: "Generations" },
               { value: "50+", label: "AI Models" },
-              { value: "100K+", label: "Creators" },
+              { value: "200K+", label: "Creators" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-foreground">

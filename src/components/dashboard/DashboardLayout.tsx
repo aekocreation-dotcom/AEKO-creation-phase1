@@ -11,8 +11,8 @@ import {
   X,
   LogOut,
   CreditCard,
-  Sparkles,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
@@ -39,9 +39,7 @@ const DashboardLayout = () => {
           {/* Logo */}
           <div className="flex items-center justify-between px-6 py-5 border-b border-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              <img src={logo} alt="AEKO" className="w-10 h-10 object-contain" />
               <span className="text-xl font-bold gradient-text">AEKO</span>
             </Link>
             <button

@@ -95,9 +95,9 @@ const ReelsViewer = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 left-4 z-50 p-2 rounded-full bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-colors"
+          className="absolute top-3 left-3 sm:top-4 sm:left-4 z-50 p-2 rounded-full bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-colors"
         >
-          <X className="w-6 h-6 text-foreground" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
         </button>
 
         {/* Main Content */}
@@ -157,70 +157,70 @@ const ReelsViewer = ({
             </div>
 
             {/* Right Side Actions */}
-            <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6">
+            <div className="absolute right-2 sm:right-4 bottom-24 sm:bottom-32 flex flex-col items-center gap-4 sm:gap-6">
               <button 
                 onClick={() => onLike(currentItem.id)}
                 className="flex flex-col items-center gap-1"
               >
-                <div className="w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
                   <Heart 
-                    className={`w-7 h-7 ${
+                    className={`w-5 h-5 sm:w-7 sm:h-7 ${
                       currentItem.isLiked ? 'text-red-500 fill-red-500' : 'text-foreground'
                     }`} 
                   />
                 </div>
-                <span className="text-xs font-medium text-foreground">{formatNumber(currentItem.likes)}</span>
+                <span className="text-[10px] sm:text-xs font-medium text-foreground">{formatNumber(currentItem.likes)}</span>
               </button>
 
               <button 
                 onClick={() => onOpenComments(currentItem.id)}
                 className="flex flex-col items-center gap-1"
               >
-                <div className="w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
-                  <MessageCircle className="w-7 h-7 text-foreground" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
                 </div>
-                <span className="text-xs font-medium text-foreground">{formatNumber(currentItem.comments)}</span>
+                <span className="text-[10px] sm:text-xs font-medium text-foreground">{formatNumber(currentItem.comments)}</span>
               </button>
 
               <button 
                 onClick={() => onShare(currentItem.id)}
                 className="flex flex-col items-center gap-1"
               >
-                <div className="w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
-                  <Send className="w-7 h-7 text-foreground" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
+                  <Send className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
                 </div>
-                <span className="text-xs font-medium text-foreground">Share</span>
+                <span className="text-[10px] sm:text-xs font-medium text-foreground">Share</span>
               </button>
 
               <button 
                 onClick={() => onSave(currentItem.id)}
                 className="flex flex-col items-center gap-1"
               >
-                <div className="w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
                   <Bookmark 
-                    className={`w-7 h-7 ${
+                    className={`w-5 h-5 sm:w-7 sm:h-7 ${
                       currentItem.isSaved ? 'text-foreground fill-foreground' : 'text-foreground'
                     }`} 
                   />
                 </div>
-                <span className="text-xs font-medium text-foreground">Save</span>
+                <span className="text-[10px] sm:text-xs font-medium text-foreground">Save</span>
               </button>
 
               <button 
                 onClick={() => setIsMuted(!isMuted)}
                 className="flex flex-col items-center gap-1"
               >
-                <div className="w-12 h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background/30 backdrop-blur-sm flex items-center justify-center">
                   {isMuted ? (
-                    <VolumeX className="w-7 h-7 text-foreground" />
+                    <VolumeX className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
                   ) : (
-                    <Volume2 className="w-7 h-7 text-foreground" />
+                    <Volume2 className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
                   )}
                 </div>
               </button>
 
               {/* Model Avatar */}
-              <div className="w-12 h-12 rounded-lg border-2 border-foreground overflow-hidden animate-[spin_3s_linear_infinite]">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 border-foreground overflow-hidden animate-[spin_3s_linear_infinite]">
                 <img 
                   src={currentItem.author.avatar} 
                   alt={currentItem.model}
@@ -230,29 +230,29 @@ const ReelsViewer = ({
             </div>
 
             {/* Bottom Info */}
-            <div className="absolute left-4 right-20 bottom-8">
-              <div className="flex items-center gap-3 mb-3">
+            <div className="absolute left-3 sm:left-4 right-16 sm:right-20 bottom-6 sm:bottom-8">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                 <img 
                   src={currentItem.author.avatar} 
                   alt={currentItem.author.username}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-foreground/50"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-foreground/50"
                 />
-                <span className="font-semibold text-foreground">@{currentItem.author.username}</span>
-                <button className="px-3 py-1 text-xs font-medium border border-foreground/50 text-foreground rounded-lg hover:bg-foreground/10 transition-colors">
+                <span className="font-semibold text-sm sm:text-base text-foreground">@{currentItem.author.username}</span>
+                <button className="px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium border border-foreground/50 text-foreground rounded-lg hover:bg-foreground/10 transition-colors">
                   Follow
                 </button>
               </div>
-              <p className="text-sm text-foreground/90 line-clamp-3 mb-2">
+              <p className="text-xs sm:text-sm text-foreground/90 line-clamp-2 sm:line-clamp-3 mb-1 sm:mb-2">
                 {currentItem.prompt}
               </p>
-              <div className="flex items-center gap-2 text-xs text-foreground/70">
-                <Music2 className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-[10px] sm:text-xs text-foreground/70">
+                <Music2 className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="truncate">AI Generated • {currentItem.model}</span>
               </div>
             </div>
 
-            {/* Navigation Arrows */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+            {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
+            <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col gap-2">
               <button
                 onClick={() => handleScroll('up')}
                 disabled={currentIndex === 0}

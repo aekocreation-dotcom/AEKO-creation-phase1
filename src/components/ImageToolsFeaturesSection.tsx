@@ -12,14 +12,6 @@ const imageFeatures = [
     gradient: "from-blue-500 to-purple-500",
   },
   {
-    id: "image-to-image",
-    title: "Image to Image AI",
-    views: "1.8M",
-    hot: true,
-    description: "Transform and enhance existing images",
-    gradient: "from-pink-500 to-rose-500",
-  },
-  {
     id: "art-generator",
     title: "AI Art Generator",
     views: "1.5M",

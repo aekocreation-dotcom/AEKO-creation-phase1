@@ -12,19 +12,21 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen w-full" style={{ backgroundColor: 'hsl(210, 20%, 98%)', color: 'hsl(222, 47%, 11%)' }}>
       <Navbar />
-      <HeroSection />
-      <CreateAgentSection />
-      <AllModelsSection />
-      <AIToolsSection />
-      <LLMAgentFeaturesSection />
-      <ImageToolsFeaturesSection />
-      <VideoToolsFeaturesSection />
-      <PricingSection />
-      <CTASection />
-      <Footer />
-    </main>
+      <div style={{ maxWidth: '90vw', margin: '0 auto', width: '100%' }}>
+        <HeroSection />
+        <CreateAgentSection />
+        <AllModelsSection />
+        <AIToolsSection />
+        <LLMAgentFeaturesSection />
+        <ImageToolsFeaturesSection />
+        <VideoToolsFeaturesSection />
+        <PricingSection />
+        <CTASection />
+        <Footer />
+      </div>
+    </div>
   );
 };
 

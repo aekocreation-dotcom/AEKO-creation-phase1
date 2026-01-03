@@ -3,25 +3,11 @@ import { MessageSquare, Image, Video, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
-  const [videoError, setVideoError] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      const handleError = () => {
-        setVideoError(true);
-      };
-      video.addEventListener("error", handleError);
-      return () => video.removeEventListener("error", handleError);
-    }
-  }, []);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -46,60 +32,74 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        {!videoError ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover scale-110"
-            poster={heroBg}
-            onError={() => setVideoError(true)}
-          >
-            {/* Tech/AI Abstract Video - Multiple sources for better compatibility */}
-            <source
-              src="https://videos.pexels.com/video-files/3045163/3045163-uhd_2560_1440_30fps.mp4"
-              type="video/mp4"
-            />
-            <source
-              src="https://videos.pexels.com/video-files/2491284/2491284-uhd_2560_1440_30fps.mp4"
-              type="video/mp4"
-            />
-            {/* Alternative tech video sources */}
-            <source
-              src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4"
-              type="video/mp4"
-            />
-          </video>
-        ) : null}
-        
-        {/* Fallback background image */}
-        <div
-          className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
-            videoError ? "opacity-100" : "opacity-0"
-          }`}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 z-20">
+      {/* Astronaut Image Background */}
+      <div className="absolute inset-0 z-0 bg-background">
+        {/* Base image - Replace URL with your astronaut/flower image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${heroBg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            backgroundImage: `url('https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&q=80')`,
           }}
         />
         
-        {/* Overlay gradients for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/85" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent" />
-      </div>
-
-      {/* Space Stars Background - Above video */}
-      <div className="absolute inset-0 z-[1] pointer-events-none">
-        {/* Animated Stars */}
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        
+        {/* Flowing highlight animations */}
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(45deg, transparent 30%, rgba(139, 92, 246, 0.3) 50%, transparent 70%)",
+            backgroundSize: "200% 200%",
+          }}
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        {/* Additional flowing highlights */}
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(-45deg, transparent 30%, rgba(236, 72, 153, 0.2) 50%, transparent 70%)",
+            backgroundSize: "200% 200%",
+          }}
+          animate={{
+            backgroundPosition: ["100% 100%", "0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        {/* Pink/purple flower highlights */}
+        <motion.div
+          className="absolute inset-0 opacity-40"
+          style={{
+            background: "radial-gradient(circle at 30% 50%, rgba(236, 72, 153, 0.3) 0%, transparent 40%), radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.3) 0%, transparent 40%)",
+          }}
+          animate={{
+            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        {/* Star field effect */}
         <div className="absolute inset-0">
-          {Array.from({ length: 100 }).map((_, i) => {
+          {Array.from({ length: 50 }).map((_, i) => {
             const size = Math.random() * 2 + 1;
             const startX = Math.random() * 100;
             const startY = Math.random() * 100;
@@ -114,7 +114,7 @@ const HeroSection = () => {
                   height: `${size}px`,
                   left: `${startX}%`,
                   top: `${startY}%`,
-                  boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
+                  boxShadow: `0 0 ${size * 3}px rgba(255, 255, 255, 0.8)`,
                 }}
                 animate={{
                   opacity: [0.2, 1, 0.2],
@@ -130,49 +130,18 @@ const HeroSection = () => {
             );
           })}
         </div>
-        
-        {/* Shooting Stars */}
-        {Array.from({ length: 5 }).map((_, i) => {
-          const startX = Math.random() * 100;
-          const startY = Math.random() * 30;
-          const angle = Math.random() * 360;
-          const distance = 200 + Math.random() * 300;
-          return (
-            <motion.div
-              key={`shooting-${i}`}
-              className="absolute w-1 h-20 bg-gradient-to-b from-white via-primary to-transparent rounded-full"
-              style={{
-                left: `${startX}%`,
-                top: `${startY}%`,
-                transform: `rotate(${angle}deg)`,
-                boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
-              }}
-              animate={{
-                x: [0, distance * Math.cos((angle * Math.PI) / 180)],
-                y: [0, distance * Math.sin((angle * Math.PI) / 180)],
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 5,
-                ease: "easeOut",
-              }}
-            />
-          );
-        })}
       </div>
 
-      {/* Animated grid overlay */}
-      <div className="absolute inset-0 z-0 opacity-20">
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 z-[1] opacity-10">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              linear-gradient(to right, hsl(217 91% 60% / 0.1) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(217 91% 60% / 0.1) 1px, transparent 1px)
+              linear-gradient(to right, rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
             `,
-            backgroundSize: "60px 60px",
+            backgroundSize: "80px 80px",
           }}
         />
       </div>
@@ -230,16 +199,7 @@ const HeroSection = () => {
                 <div className="flex-1 relative min-w-0 pl-4">
                   {!input && (
                     <div className="absolute inset-0 flex items-center justify-center px-4 pointer-events-none">
-                      <span 
-                        className="text-base leading-relaxed font-semibold animate-gradient"
-                        style={{
-                          background: "linear-gradient(90deg, #3b82f6, #a855f7, #ec4899, #f97316, #3b82f6)",
-                          backgroundSize: "200% 100%",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text",
-                        }}
-                      >
+                      <span className="text-base leading-relaxed font-semibold gradient-text">
                         Ask Me Anything
                       </span>
                     </div>

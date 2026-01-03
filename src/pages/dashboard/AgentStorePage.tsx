@@ -103,17 +103,17 @@ const AgentStorePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background p-6 lg:p-8">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <FileText className="w-6 h-6 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">Agent Store</h1>
+      <div className="mb-3 px-1">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-primary" />
+            <h1 className="text-2xl font-bold text-foreground">Agent Store</h1>
           </div>
           <Button
             variant="hero"
-            size="lg"
+            size="default"
             className="gap-2"
             onClick={() => {
               toast.info("Create Agent feature coming soon!");
@@ -126,43 +126,43 @@ const AgentStorePage = () => {
 
         {/* Search Bar */}
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search Agents..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-card border border-border/50 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+            className="w-full pl-9 pr-4 py-2 rounded-lg bg-card border border-border/50 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all text-sm"
           />
         </div>
       </div>
 
-      {/* Agent Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Agent Grid - Full Width */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 px-1">
         {filteredAgents.map((agent, index) => (
           <motion.div
             key={agent.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="bg-card border border-border/50 rounded-2xl p-6 hover:border-primary/50 hover:shadow-xl transition-all group"
+            className="bg-card border border-border/50 rounded-xl p-4 hover:border-primary/50 hover:shadow-lg transition-all group"
           >
             {/* Card Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-6 h-6 text-primary" />
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
                     {agent.name}
                   </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground">
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-secondary/50 text-muted-foreground">
                       {agent.status}
                     </span>
                     <span className="text-xs text-muted-foreground">|</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500">
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500">
                       {agent.pricing}
                     </span>
                   </div>
@@ -189,12 +189,12 @@ const AgentStorePage = () => {
             </div>
 
             {/* Description */}
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+            <p className="text-xs text-muted-foreground mb-3 line-clamp-3 leading-relaxed">
               {agent.description}
             </p>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-border/50">
+            <div className="flex items-center justify-between pt-3 border-t border-border/50">
               <div className="flex items-center gap-2">
                 <button
                   className="p-2 hover:bg-secondary/50 rounded-lg transition-colors text-muted-foreground hover:text-foreground"
@@ -226,9 +226,9 @@ const AgentStorePage = () => {
       </div>
 
       {filteredAgents.length === 0 && (
-        <div className="text-center py-16">
-          <Bot className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-          <p className="text-muted-foreground">No agents found</p>
+        <div className="text-center py-8">
+          <Bot className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">No agents found</p>
         </div>
       )}
     </div>
@@ -236,6 +236,7 @@ const AgentStorePage = () => {
 };
 
 export default AgentStorePage;
+
 
 
 

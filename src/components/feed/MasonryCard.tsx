@@ -80,9 +80,9 @@ const MasonryCard = ({
 
         {/* Video indicator */}
         {item.type === "video" && (
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
-              <Play className="w-3 h-3 sm:w-4 sm:h-4 text-foreground ml-0.5" />
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
+              <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-foreground ml-0.5" />
             </div>
           </div>
         )}
@@ -97,53 +97,53 @@ const MasonryCard = ({
               className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"
             >
               {/* Bottom info */}
-              <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
+              <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-2">
                 {/* Author info */}
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <img 
                     src={item.author.avatar} 
                     alt={item.author.username}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover ring-1 ring-border"
+                    className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-border"
                   />
-                  <span className="text-xs sm:text-sm font-medium text-foreground truncate">
+                  <span className="text-xs font-medium text-foreground truncate">
                     {item.author.username}
                   </span>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 sm:gap-2">
+                  <div className="flex items-center gap-1">
                     <button 
                       onClick={(e) => { e.stopPropagation(); onLike(item.id); }}
-                      className="p-1.5 sm:p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
                     >
                       <Heart 
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+                        className={`w-3 h-3 ${
                           item.isLiked ? 'text-red-500 fill-red-500' : 'text-foreground'
                         }`} 
                       />
                     </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); onSave(item.id); }}
-                      className="p-1.5 sm:p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
                     >
                       <Bookmark 
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+                        className={`w-3 h-3 ${
                           item.isSaved ? 'text-foreground fill-foreground' : 'text-foreground'
                         }`} 
                       />
                     </button>
                     <button 
                       onClick={handleCopyPrompt}
-                      className="p-1.5 sm:p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
                     >
-                      <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-foreground" />
+                      <Copy className="w-3 h-3 text-foreground" />
                     </button>
                     <button 
                       onClick={handleDownload}
-                      className="p-1.5 sm:p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
                     >
-                      <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-foreground" />
+                      <Download className="w-3 h-3 text-foreground" />
                     </button>
                   </div>
                 </div>

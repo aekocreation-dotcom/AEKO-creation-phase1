@@ -326,14 +326,13 @@ const AgentLLMPage = () => {
       <div className="relative z-10 flex flex-col" style={{ height: '100vh', maxHeight: '100vh', overflow: 'hidden', width: '100%' }}>
       {/* Header - Collapsible when input focused */}
       <motion.div 
-        className="border-b border-border relative z-10 bg-background/80 backdrop-blur-sm flex-shrink-0"
+        className="relative z-10 bg-background/80 backdrop-blur-sm flex-shrink-0"
         animate={{
           height: isInputFocused ? "0px" : "auto",
           opacity: isInputFocused ? 0 : 1,
           paddingTop: isInputFocused ? "0px" : "8px",
           paddingBottom: isInputFocused ? "0px" : "8px",
           paddingX: isInputFocused ? "0px" : "16px",
-          borderBottomWidth: isInputFocused ? "0px" : "1px",
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
@@ -369,9 +368,47 @@ const AgentLLMPage = () => {
               }}
               transition={{ duration: 0.2 }}
             >
-              <div className="text-center space-y-2 w-full px-4">
-                <MessageSquare className="w-12 h-12 text-muted-foreground/50 mx-auto" />
-                <p className="text-muted-foreground">Start a conversation</p>
+              <div className="text-center space-y-6 w-full px-4 max-w-2xl mx-auto">
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
+                >
+                  What do you want to create?
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="text-lg md:text-xl text-muted-foreground"
+                >
+                  Type your prompt - turn ideas into stunning AI visuals instantly.
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="flex flex-wrap items-center justify-center gap-3 mt-8"
+                >
+                  {[
+                    "Create a futuristic cityscape",
+                    "Design a logo for my brand",
+                    "Generate a product mockup",
+                    "Write a blog post about AI",
+                  ].map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setInput(suggestion);
+                        inputRef.current?.focus();
+                      }}
+                      className="px-4 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-primary/50 text-sm text-foreground transition-all duration-200 hover:scale-105"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </motion.div>
               </div>
             </motion.div>
           ) : (
@@ -515,7 +552,7 @@ const AgentLLMPage = () => {
 
       {/* Input Area - Professional Design - Centered at Bottom */}
       <motion.div 
-        className="border-t border-border/50 relative z-10 bg-background/95 backdrop-blur-xl flex-shrink-0"
+        className="relative z-10 bg-background/95 backdrop-blur-xl flex-shrink-0"
         style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', display: 'flex', justifyContent: 'center' }}
         animate={{
           paddingTop: isInputFocused ? "10px" : "14px",

@@ -20,14 +20,6 @@ const videoFeatures = [
     gradient: "from-blue-500 to-cyan-500",
   },
   {
-    id: "image-to-video",
-    title: "Image to Video AI",
-    views: "2.1M",
-    hot: true,
-    description: "Animate images into videos",
-    gradient: "from-orange-500 to-red-500",
-  },
-  {
     id: "video-editor",
     title: "AI Video Editor",
     views: "1.5M",

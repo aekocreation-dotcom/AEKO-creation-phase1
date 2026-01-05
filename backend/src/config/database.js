@@ -26,37 +26,3 @@ const connectDB = async () => {
 };
 
 export default connectDB;
-
-
-    console.error(`MongoDB connection error: ${error.message}`);
-    // In dev, don't crash the whole server; in production you may want to exit.
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
-  }
-};
-
-export default connectDB;
-
-
-    console.error(`MongoDB connection error: ${error.message}`);
-    // In dev, don't crash the whole server; in production you may want to exit.
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
-  }
-};
-
-export default connectDB;
-
-
-    console.error(`MongoDB connection error: ${error.message}`);
-    // In dev, don't crash the whole server; in production you may want to exit.
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
-  }
-};
-
-export default connectDB;
-

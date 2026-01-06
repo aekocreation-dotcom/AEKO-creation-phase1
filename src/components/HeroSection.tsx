@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageSquare, Image, Video, Send } from "lucide-react";
+import { MessageSquare, Image, Video, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -18,10 +18,8 @@ const HeroSection = () => {
   }, [input]);
 
   const handleSubmit = () => {
-    if (input.trim()) {
-      // Navigate to agent page with the query
-      navigate(`/dashboard/tools/agent?q=${encodeURIComponent(input.trim())}`);
-    }
+    // Navigate to agent page
+    navigate(`/dashboard/tools/agent`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -187,42 +185,44 @@ const HeroSection = () => {
             world's best models.
           </motion.p>
 
-          {/* GPT Textbox */}
+          {/* Ask Me Anything Section - New Design */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="mb-8 max-w-xl mx-auto"
+            className="mb-8 max-w-2xl mx-auto"
           >
-            <div className="relative">
-              <div className="flex items-end gap-2 bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20">
-                <div className="flex-1 relative min-w-0 pl-4">
-                  {!input && (
-                    <div className="absolute inset-0 flex items-center justify-center px-4 pointer-events-none">
-                      <span className="text-base leading-relaxed font-semibold gradient-text">
-                        Ask Me Anything
-                      </span>
-                    </div>
-                  )}
-                  <textarea
-                    ref={inputRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder=""
-                    rows={1}
-                    className="w-full px-2 py-3 bg-transparent text-foreground focus:outline-none resize-none overflow-hidden text-sm leading-relaxed"
-                    style={{ minHeight: "52px", maxHeight: "200px" }}
-                  />
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!input.trim()}
-                  className="p-2.5 mr-2 mb-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                  title="Send message"
+            <div className="relative rounded-2xl overflow-hidden">
+              {/* Blue Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-blue-400" />
+              
+              {/* Content Container */}
+              <div className="relative px-8 py-12 text-center">
+                {/* Top Text */}
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="text-white text-2xl md:text-3xl font-semibold mb-8"
                 >
-                  <Send className="w-4 h-4" />
-                </button>
+                  Ask Me Anything.
+                </motion.p>
+                
+                {/* GET STARTED Button */}
+                <motion.button
+                  onClick={handleSubmit}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mx-auto flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full font-semibold text-base md:text-lg hover:bg-black/90 transition-all duration-200 shadow-lg"
+                >
+                  <span>GET STARTED</span>
+                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                    <ArrowRight className="w-4 h-4 text-black" />
+                  </div>
+                </motion.button>
               </div>
             </div>
           </motion.div>

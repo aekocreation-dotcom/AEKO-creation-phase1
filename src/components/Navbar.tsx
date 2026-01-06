@@ -24,39 +24,39 @@ const Navbar = () => {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50"
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{ background: 'transparent' }}
     >
-      <div className="container mx-auto px-4 lg:px-8" style={{ maxWidth: '90vw' }}>
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
-            <img 
-              src={logoDark} 
-              alt="AEKO" 
-              className="w-10 h-10 object-contain" 
-            />
-            <span className="text-xl font-bold text-foreground">AEKO</span>
-          </a>
+      <div className="container mx-auto px-4 lg:px-6" style={{ maxWidth: '1100px' }}>
+        <div className="flex items-center justify-between h-14">
+          {/* Left Side - Logo */}
+          <div className="flex items-center">
+            <a href="#" className="flex items-center gap-2">
+              <img 
+                src={logoDark} 
+                alt="AEKO" 
+                className="w-8 h-8 object-contain" 
+              />
+              <span className="text-lg font-bold text-white">AEKO</span>
+            </a>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Right Side - All Nav Links + CTA */}
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                className="text-sm text-white/90 hover:text-white transition-colors duration-200"
               >
                 {link.name}
               </a>
             ))}
-          </div>
-
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/auth/sign-in")}
+              className="text-white/90 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
@@ -64,6 +64,7 @@ const Navbar = () => {
               variant="default"
               size="sm"
               onClick={() => navigate("/dashboard/tools")}
+              className="bg-white text-black hover:bg-white/90"
             >
               Start Creating
             </Button>
@@ -72,7 +73,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-foreground"
+            className="md:hidden p-2 text-white"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -85,7 +86,7 @@ const Navbar = () => {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
+          className="md:hidden bg-background/95 backdrop-blur-xl"
         >
           <div className="container mx-auto px-4 py-4 space-y-4">
             {navLinks.map((link) => (

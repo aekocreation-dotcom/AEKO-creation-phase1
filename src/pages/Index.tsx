@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden w-full relative" style={{ maxWidth: '90vw', margin: '0 auto' }}>
+    <main className="min-h-screen bg-background text-foreground overflow-x-hidden w-full relative">
       {/* Neural Network Background - Full Page (except hero) */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none z-0"
@@ -26,16 +26,14 @@ const Index = () => {
       
       <div className="relative z-10">
         <Navbar />
-        <div style={{ maxWidth: '90vw', margin: '0 auto', width: '100%' }}>
-          <HeroSection />
-          <CreateAgentSection />
-          <AllModelsSection />
-          <ImageToolsFeaturesSection />
-          <VideoToolsFeaturesSection />
-          <PricingSection />
-          <CTASection />
-          <Footer />
-        </div>
+        <HeroSection />
+        <CreateAgentSection />
+        <AllModelsSection />
+        <ImageToolsFeaturesSection />
+        <VideoToolsFeaturesSection />
+        <PricingSection />
+        <CTASection />
+        <Footer />
       </div>
     </main>
   );

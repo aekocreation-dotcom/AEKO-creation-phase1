@@ -85,9 +85,9 @@ const ImageToolsFeaturesSection = () => {
     : imageFeatures;
 
   return (
-    <section className="py-24 lg:py-32 relative overflow-hidden">
+    <section className="py-24 lg:py-32 relative overflow-hidden w-full">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background w-full" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Header */}

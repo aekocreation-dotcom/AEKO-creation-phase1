@@ -43,9 +43,9 @@ const CreateAgentSection = () => {
   ];
 
   return (
-    <section className="py-24 lg:py-32 relative overflow-hidden">
+    <section className="py-24 lg:py-32 relative overflow-hidden w-full">
       {/* Colorful Vibrant Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#1a0b2e] to-[#0f0517]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#1a0b2e] to-[#0f0517] w-full" />
       
       {/* Colorful Animated Gradient Orbs */}
       <motion.div

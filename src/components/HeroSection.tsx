@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageSquare, Image, Video, Send, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MessageSquare, Image, Video, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 
@@ -32,9 +31,9 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 z-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 z-20 w-full">
       {/* Astronaut Image Background */}
-      <div className="absolute inset-0 z-0 bg-background">
+      <div className="absolute inset-0 z-0 bg-background w-full">
         {/* Base image - Replace URL with your astronaut/flower image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -227,24 +226,183 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/dashboard/tools">
-              <Button variant="hero" size="xl" className="group gap-2">
-                <MessageSquare className="w-5 h-5" />
-                Chat Agent
-              </Button>
-            </Link>
-            <Link to="/dashboard/tools">
-              <Button variant="hero" size="xl" className="group gap-2">
-                <Image className="w-5 h-5" />
-                Image
-              </Button>
-            </Link>
-            <Link to="/dashboard/tools">
-              <Button variant="hero" size="xl" className="group gap-2">
-                <Video className="w-5 h-5" />
-                Video
-              </Button>
-            </Link>
+            {/* Chat Agent Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative group"
+            >
+              <motion.div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                }}
+              />
+              <div
+                className="rounded-xl p-[2px]"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                <motion.div
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="h-full w-full"
+                >
+                  <motion.div
+                    className="relative flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg overflow-hidden"
+                    style={{
+                      background: "linear-gradient(135deg, #6366F1, #3B82F6, #06B6D4, #10B981, #84CC16, #F59E0B, #EF4444)",
+                      backgroundSize: "200% 200%",
+                      color: "#E5E7EB",
+                    }}
+                    animate={{
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Link
+                      to="/dashboard/tools"
+                      className="relative flex items-center gap-2 w-full h-full"
+                    >
+                      <MessageSquare className="w-5 h-5 relative z-10" style={{ color: "#E5E7EB" }} />
+                      <span className="relative z-10">Chat Agent</span>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Image Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative group"
+            >
+              <motion.div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                }}
+              />
+              <div
+                className="rounded-xl p-[2px]"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                <motion.div
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.2,
+                  }}
+                  className="h-full w-full"
+                >
+                  <motion.div
+                    className="relative flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg overflow-hidden"
+                    style={{
+                      background: "linear-gradient(135deg, #6366F1, #3B82F6, #06B6D4, #10B981, #84CC16, #F59E0B, #EF4444)",
+                      backgroundSize: "200% 200%",
+                      color: "#E5E7EB",
+                    }}
+                    animate={{
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.2,
+                    }}
+                  >
+                    <Link
+                      to="/dashboard/tools"
+                      className="relative flex items-center gap-2 w-full h-full"
+                    >
+                      <Image className="w-5 h-5 relative z-10" style={{ color: "#E5E7EB" }} />
+                      <span className="relative z-10">Image</span>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Video Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative group"
+            >
+              <motion.div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                }}
+              />
+              <div
+                className="rounded-xl p-[2px]"
+                style={{
+                  background: "linear-gradient(135deg, #A855F7, #3B82F6, #22D3EE, #34D399, #FACC15, #FB7185)",
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                <motion.div
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.4,
+                  }}
+                  className="h-full w-full"
+                >
+                  <motion.div
+                    className="relative flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg overflow-hidden"
+                    style={{
+                      background: "linear-gradient(135deg, #6366F1, #3B82F6, #06B6D4, #10B981, #84CC16, #F59E0B, #EF4444)",
+                      backgroundSize: "200% 200%",
+                      color: "#E5E7EB",
+                    }}
+                    animate={{
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.4,
+                    }}
+                  >
+                    <Link
+                      to="/dashboard/tools"
+                      className="relative flex items-center gap-2 w-full h-full"
+                    >
+                      <Video className="w-5 h-5 relative z-10" style={{ color: "#E5E7EB" }} />
+                      <span className="relative z-10">Video</span>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* Stats */}
@@ -270,8 +428,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10" />
     </section>
   );
 };

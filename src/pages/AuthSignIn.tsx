@@ -26,7 +26,6 @@ const AuthSignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
 
@@ -72,52 +71,12 @@ const AuthSignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please enter your email and password");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      if (isSignUp) {
-        // Registration logic - you may need to add name field
-        const res = await authAPI.register(email.split("@")[0], email, password);
-        if (res.success) {
-          toast.success("Account created! Welcome!");
-          navigate("/dashboard");
-        } else {
-          toast.error(res.message || "Registration failed");
-        }
-      } else {
-        const res = await authAPI.login(email, password);
-        if (res.success) {
-          toast.success("Welcome back!");
-          navigate("/dashboard");
-        } else {
-          toast.error(res.message || "Invalid credentials");
-        }
-      }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message || "Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
+    // For now, navigate directly to Agent LLM page
+    navigate("/dashboard/tools/agent");
   };
 
   const handleGoogleSignIn = () => {
-    if (!window.google) {
-      toast.error("Google Sign-In is loading. Please wait a moment and try again.");
-      return;
-    }
-    if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
-      toast.info(
-        "Google OAuth is not configured. Please use email/password login.",
-        { duration: 4000 }
-      );
-      return;
-    }
-    setIsGoogleLoading(true);
-    window.google.accounts.id.prompt();
+    navigate("/dashboard/tools/agent");
   };
 
   return (
@@ -175,7 +134,7 @@ const AuthSignIn = () => {
             type="button"
             variant="outline"
             className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
-            onClick={() => toast.info("Canva integration coming soon")}
+            onClick={() => navigate("/dashboard/tools/agent")}
           >
             <div className="w-6 h-6 rounded-full bg-teal-500 flex items-center justify-center">
               <span className="text-white font-bold text-sm">C</span>
@@ -188,7 +147,7 @@ const AuthSignIn = () => {
             type="button"
             variant="outline"
             className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
-            onClick={() => toast.info("Apple sign-in coming soon")}
+            onClick={() => navigate("/dashboard/tools/agent")}
           >
             <Apple className="w-5 h-5 text-white" />
             <span className="font-medium">Apple</span>
@@ -200,15 +159,10 @@ const AuthSignIn = () => {
             variant="outline"
             className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
             onClick={handleGoogleSignIn}
-            disabled={isGoogleLoading}
           >
-            {isGoogleLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
-                <span className="text-[10px] font-bold text-[#4285F4]">G</span>
-              </div>
-            )}
+            <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+              <span className="text-[10px] font-bold text-[#4285F4]">G</span>
+            </div>
             <span className="font-medium">Google</span>
           </Button>
 
@@ -217,7 +171,7 @@ const AuthSignIn = () => {
             type="button"
             variant="outline"
             className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
-            onClick={() => toast.info("Microsoft sign-in coming soon")}
+            onClick={() => navigate("/dashboard/tools/agent")}
           >
             <div className="w-5 h-5 flex items-center justify-center">
               <div className="w-3 h-3 bg-[#00A4EF]"></div>
@@ -288,16 +242,8 @@ const AuthSignIn = () => {
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                disabled={isLoading}
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {isSignUp ? "Creating account..." : "Signing in..."}
-                  </>
-                ) : (
-                  isSignUp ? "Create Account" : "Sign In"
-                )}
+                {isSignUp ? "Create Account" : "Sign In"}
               </Button>
             </motion.form>
           )}

@@ -131,12 +131,16 @@ const AuthSignIn = () => {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-3 mb-12"
         >
-          <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
-            <img 
-              src={logoDark} 
-              alt="AEKO" 
-              className="w-10 h-10 object-contain" 
-            />
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            {/* Perfect round white border */}
+            <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 transition-all duration-200" style={{ borderWidth: '3px' }} />
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+              <img 
+                src={logoDark} 
+                alt="AEKO" 
+                className="w-full h-full object-contain" 
+              />
+            </div>
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-bold text-white">AEKO</span>

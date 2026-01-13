@@ -32,12 +32,16 @@ const Navbar = () => {
           {/* Left Side - Logo */}
           <div className="flex items-center">
             <a href="#" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white group-hover:ring-white/80 transition-all duration-200">
-                <img 
-                  src={logoDark} 
-                  alt="AEKO" 
-                  className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-200" 
-                />
+              <div className="relative w-12 h-12 flex items-center justify-center">
+                {/* Perfect round white border */}
+                <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 group-hover:shadow-white/40 transition-all duration-200" style={{ borderWidth: '3px' }} />
+                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+                  <img 
+                    src={logoDark} 
+                    alt="AEKO" 
+                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200" 
+                  />
+                </div>
               </div>
               <div className="hidden lg:flex items-baseline gap-1">
                 <span className="text-xl font-bold text-white">AEKO</span>

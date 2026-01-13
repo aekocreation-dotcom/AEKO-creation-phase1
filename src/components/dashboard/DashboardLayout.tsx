@@ -154,13 +154,17 @@ const DashboardLayout = () => {
             <div className="flex items-center justify-center py-5 border-b border-border/50 relative">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/" className="flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
-                      <img 
-                        src={logoDark} 
-                        alt="AEKO" 
-                        className="w-10 h-10 object-contain" 
-                      />
+                  <Link to="/" className="flex items-center justify-center group">
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                      {/* Perfect round white border */}
+                      <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 group-hover:shadow-white/40 transition-all duration-200" style={{ borderWidth: '3px' }} />
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+                        <img 
+                          src={logoDark} 
+                          alt="AEKO" 
+                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200" 
+                        />
+                      </div>
                     </div>
                   </Link>
                 </TooltipTrigger>

@@ -56,8 +56,37 @@ const AgentLLMPage = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Background images array - looping through different images
+  const backgroundImages = [
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80', // Waterfalls with turquoise pool - cascading waterfalls into crystal clear turquoise water
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80', // Tropical seascape with longtail boat at sunset - tropical waters with limestone cliffs
+    'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80', // Japanese-style landscape with red sky and moon - dramatic sunset landscape
+    'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&q=80', // African savanna sunset scene - acacia trees at sunset
+  ];
+
+  // Preload background images
+  useEffect(() => {
+    backgroundImages.forEach((imageUrl) => {
+      const img = new Image();
+      img.src = imageUrl;
+    });
+  }, []);
+
+  // Loop through background images every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % backgroundImages.length;
+        return nextIndex;
+      });
+    }, 10000); // Change image every 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -180,32 +209,56 @@ const AgentLLMPage = () => {
 
   return (
     <TooltipProvider>
-      <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`,
-            opacity: 0.15,
-            filter: 'blur(0.5px)',
-          }}
-        />
+      <div className="absolute inset-0 flex flex-col bg-background overflow-hidden">
+        {/* Looping Background Images - Always visible with fallback */}
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+          {/* Fallback background color */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#1a0b2e] to-[#0f0517]" />
+          
+          {backgroundImages.map((imageUrl, index) => (
+            <motion.div
+              key={`bg-${index}-${imageUrl}`}
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              initial={{ opacity: index === 0 ? 0.7 : 0 }}
+              animate={{
+                opacity: currentBgIndex === index ? 0.7 : 0,
+                scale: currentBgIndex === index ? 1.02 : 1,
+              }}
+              transition={{
+                duration: 2.5,
+                ease: "easeInOut",
+              }}
+              style={{
+                backgroundImage: `url('${imageUrl}')`,
+                filter: 'blur(0px)',
+                zIndex: currentBgIndex === index ? 1 : 0,
+                willChange: 'opacity',
+              }}
+              onError={(e) => {
+                console.error(`Failed to load background image ${index}:`, imageUrl);
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-background/10 pointer-events-none" style={{ zIndex: 2 }} />
         
         {/* Content */}
-        <div className="relative z-10 flex flex-col h-full">
+        <div className="relative flex flex-col flex-1 w-full overflow-y-auto" style={{ zIndex: 10 }}>
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 overflow-y-auto">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 w-full">
             {messages.length === 0 ? (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-4xl space-y-8"
               >
                 {/* Title */}
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 1, y: 0 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.3 }}
                   className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground text-center"
                 >
                   Let's Create
@@ -213,49 +266,111 @@ const AgentLLMPage = () => {
 
                 {/* Prompt Input Area */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 1, y: 0 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="flex items-center gap-3"
+                  transition={{ duration: 0.3 }}
+                  className="relative"
                 >
-                  <div className="relative flex-1">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-                      <Mountain className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <textarea
-                      ref={inputRef}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type a prompt..."
-                      rows={1}
-                      className="w-full pl-12 pr-4 py-4 bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 resize-none transition-all shadow-lg"
-                      style={{ 
-                        minHeight: "56px",
-                        maxHeight: "120px",
-                        boxShadow: input ? "0 0 20px rgba(139, 92, 246, 0.3)" : undefined,
+                  <div className="relative flex-1 w-full" style={{ borderRadius: '16px' }}>
+                    {/* Rich Rainbow Animated Gradient Border */}
+                    <motion.div
+                      className="absolute inset-0 rounded-2xl pointer-events-none"
+                      style={{
+                        padding: '2px',
+                        background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899, #F472B6, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899, #7C3AED)',
+                        backgroundSize: '300% 300%',
+                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                        WebkitMaskComposite: 'xor',
+                        maskComposite: 'exclude',
+                      }}
+                      animate={{
+                        backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: 'linear',
                       }}
                     />
+                    
+                    {/* Outer Glow Effect - Rainbow */}
+                    <motion.div
+                      className="absolute -inset-1 rounded-2xl"
+                      animate={{
+                        opacity: [0.5, 0.8, 0.5],
+                        scale: [1, 1.02, 1],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(236, 72, 153, 0.4), rgba(59, 130, 246, 0.4), rgba(34, 211, 238, 0.4), rgba(34, 197, 94, 0.4), rgba(250, 204, 21, 0.4))',
+                        filter: 'blur(10px)',
+                      }}
+                    />
+                    
+                    {/* Inner Background */}
+                    <div className="relative flex items-center bg-[#1a1f3a]/90 backdrop-blur-md rounded-2xl shadow-xl min-h-[56px]" style={{ borderRadius: '14px' }}>
+                      {/* Inner Glow on Focus */}
+                      {input && (
+                        <motion.div
+                          className="absolute inset-0 rounded-2xl"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
+                            boxShadow: 'inset 0 0 25px rgba(139, 92, 246, 0.3)',
+                          }}
+                        />
+                      )}
+                      
+                      {/* Mountain Icon */}
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-shrink-0">
+                        <Mountain className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      
+                      {/* Textarea */}
+                      <textarea
+                        ref={inputRef}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type a prompt..."
+                        rows={1}
+                        className="w-full pl-12 pr-14 py-4 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none transition-all relative z-10 overflow-y-auto"
+                        style={{ 
+                          minHeight: "56px",
+                          maxHeight: "120px",
+                        }}
+                      />
+                      
+                      {/* Send Button - Properly Aligned */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex-shrink-0">
+                        <motion.button
+                          onClick={handleSend}
+                          disabled={!input.trim() || isLoading}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Send className="w-5 h-5" />
+                          )}
+                        </motion.button>
+                      </div>
+                    </div>
                   </div>
-                  <Button
-                    onClick={handleSend}
-                    disabled={!input.trim() || isLoading}
-                    size="lg"
-                    className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      "Generate"
-                    )}
-                  </Button>
                 </motion.div>
 
                 {/* Creative Tools */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 1, y: 0 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
+                  transition={{ duration: 0.3 }}
                   className="flex items-center justify-center gap-6 flex-wrap"
                 >
                   {creativeTools.map((tool) => (
@@ -409,37 +524,100 @@ const AgentLLMPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="relative z-10 bg-background/95 backdrop-blur-xl border-t border-border/50 p-4"
             >
-              <div className="max-w-4xl mx-auto flex items-center gap-3">
-                <div className="relative flex-1">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-                    <Mountain className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <textarea
-                    ref={inputRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type a prompt..."
-                    rows={1}
-                    className="w-full pl-12 pr-4 py-3 bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 resize-none transition-all"
-                    style={{ 
-                      minHeight: "48px",
-                      maxHeight: "120px",
+              <div className="max-w-4xl mx-auto">
+                <div className="relative flex-1 w-full" style={{ borderRadius: '16px' }}>
+                  {/* Rich Rainbow Animated Gradient Border */}
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl pointer-events-none"
+                    style={{
+                      padding: '2px',
+                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899, #F472B6, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899, #7C3AED)',
+                      backgroundSize: '300% 300%',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                    }}
+                    animate={{
+                      backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: 'linear',
                     }}
                   />
+                  
+                  {/* Outer Glow Effect - Rainbow */}
+                  <motion.div
+                    className="absolute -inset-1 rounded-2xl"
+                    animate={{
+                      opacity: [0.5, 0.8, 0.5],
+                      scale: [1, 1.02, 1],
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(236, 72, 153, 0.4), rgba(59, 130, 246, 0.4), rgba(34, 211, 238, 0.4), rgba(34, 197, 94, 0.4), rgba(250, 204, 21, 0.4))',
+                      filter: 'blur(10px)',
+                    }}
+                  />
+                  
+                  {/* Inner Background */}
+                  <div className="relative flex items-center bg-[#1a1f3a]/90 backdrop-blur-md rounded-2xl shadow-xl min-h-[48px]" style={{ borderRadius: '14px' }}>
+                    {/* Inner Glow on Focus */}
+                    {input && (
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
+                          boxShadow: 'inset 0 0 25px rgba(139, 92, 246, 0.3)',
+                        }}
+                      />
+                    )}
+                    
+                    {/* Mountain Icon */}
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-shrink-0">
+                      <Mountain className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    
+                    {/* Textarea */}
+                    <textarea
+                      ref={inputRef}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type a prompt..."
+                      rows={1}
+                      className="w-full pl-12 pr-14 py-3 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none transition-all relative z-10 overflow-y-auto"
+                      style={{ 
+                        minHeight: "48px",
+                        maxHeight: "120px",
+                      }}
+                    />
+                    
+                    {/* Send Button - Properly Aligned */}
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex-shrink-0">
+                      <motion.button
+                        onClick={handleSend}
+                        disabled={!input.trim() || isLoading}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Send className="w-5 h-5" />
+                        )}
+                      </motion.button>
+                    </div>
+                  </div>
                 </div>
-                <Button
-                  onClick={handleSend}
-                  disabled={!input.trim() || isLoading}
-                  size="lg"
-                  className="h-12 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
               </div>
             </motion.div>
           )}

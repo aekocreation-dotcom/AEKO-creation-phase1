@@ -8,7 +8,24 @@ import {
   FileText, 
   Rocket,
   Globe,
-  Sparkles
+  Sparkles,
+  MessageSquare,
+  ShoppingCart,
+  Headphones,
+  Briefcase,
+  Zap,
+  CheckCircle2,
+  Ticket,
+  Clock,
+  FileCheck,
+  ArrowRight,
+  ArrowDown,
+  ArrowDownRight,
+  CheckCircle,
+  User,
+  Hand,
+  Brain,
+  Play
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +34,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const CreateAgentSection = () => {
   const [agentDescription, setAgentDescription] = useState("");
@@ -42,7 +65,39 @@ const CreateAgentSection = () => {
     "Text to Agent",
   ];
 
+  const useCases = [
+    {
+      title: "Customer Support Agent",
+      description: "Handle customer inquiries, resolve issues, and manage orders automatically",
+      example: "Customer: 'Is the navy blue sweater available in Size L?'\nAgent: 'Yes it is, would you like it customized?'",
+      icon: Headphones,
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      title: "E-commerce Assistant",
+      description: "Help customers find products, check availability, and process custom orders",
+      example: "Customer: 'I'd like my initials K.T. on the sweater'\nAgent: 'Your custom order is placed.'",
+      icon: ShoppingCart,
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      title: "Travel Booking Agent",
+      description: "Reschedule flights, adjust hotel bookings, and manage travel preferences",
+      example: "Customer: 'Reschedule to 13:45 flight on Oct 30'\nAgent: 'Done. Your hotel checkout is adjusted, too.'",
+      icon: Briefcase,
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      title: "Business Intelligence",
+      description: "Analyze customer sentiment, track issues, and provide insights in real-time",
+      example: "AI Intelligence Dashboard\nSentiment: Negative (43) → Neutral (18)\nIssue resolved automatically",
+      icon: Zap,
+      color: "from-orange-500 to-red-500",
+    },
+  ];
+
   return (
+    <TooltipProvider>
     <section className="py-24 lg:py-32 relative overflow-hidden w-full">
       {/* Colorful Vibrant Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#1a0b2e] to-[#0f0517] w-full" />
@@ -127,27 +182,31 @@ const CreateAgentSection = () => {
               }}
             />
             
-            {/* Main card container - Clean Design */}
-            <div className="relative bg-card/30 backdrop-blur-xl border-2 border-primary/20 rounded-3xl p-6 lg:p-8 overflow-hidden shadow-lg shadow-primary/5">
-              {/* Subtle Animated Border Gradient */}
+            {/* Main card container - Clean Design with Rich Animated Border */}
+            <div className="relative rounded-3xl p-6 lg:p-8 overflow-hidden shadow-lg shadow-primary/5" style={{ borderRadius: '24px' }}>
+              {/* Rich Animated Gradient Border */}
               <motion.div
                 className="absolute inset-0 rounded-3xl pointer-events-none"
                 style={{
-                  background: 'linear-gradient(90deg, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.4), hsl(var(--primary) / 0.3))',
-                  backgroundSize: '200% 100%',
+                  padding: '2px',
+                  background: 'linear-gradient(135deg, #7C3AED, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899, #7C3AED)',
+                  backgroundSize: '300% 300%',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
                 }}
                 animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                  backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
                 }}
                 transition={{
-                  duration: 3,
+                  duration: 5,
                   repeat: Infinity,
                   ease: 'linear',
                 }}
               />
               
               {/* Inner Background */}
-              <div className="absolute inset-[2px] rounded-3xl bg-card/30 backdrop-blur-xl" />
+              <div className="absolute inset-[2px] rounded-3xl bg-card/30 backdrop-blur-xl" style={{ borderRadius: '22px' }} />
               
               <div className="relative z-10">
             {/* Top Section - Textarea */}
@@ -259,8 +318,399 @@ const CreateAgentSection = () => {
           </div>
           </div>
         </motion.div>
+
+        {/* Automate 80%+ Section - New Design */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-20 max-w-7xl mx-auto"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Text Content */}
+            <div className="space-y-8">
+              <h3 className="text-5xl md:text-6xl font-bold text-foreground leading-tight tracking-tight">
+                Automate 80%+ of interactions with AI agents
+              </h3>
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                AEKO AI agents resolve complex issues on any channel. Powered by agentic AI, they reason, adapt, and act independently – delighting customers and employees while reducing costs at scale. Launch in just minutes, with no technical expertise needed.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-6 text-base rounded-xl shadow-lg"
+                >
+                  Contact Sales
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-foreground/20 hover:bg-secondary/50 font-semibold px-8 py-6 text-base rounded-xl bg-background"
+                >
+                  <Play className="w-5 h-5 mr-2" fill="currentColor" />
+                  Watch video
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Side - Mobile Interface Demo */}
+            <div className="relative">
+              {/* Large Light Green Background Container with Rich Animated Border */}
+              <div className="relative rounded-3xl p-8 overflow-hidden shadow-2xl" style={{ borderRadius: '24px' }}>
+                {/* Rich Animated Gradient Border */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl pointer-events-none"
+                  style={{
+                    padding: '2px',
+                    background: 'linear-gradient(135deg, #22C55E, #10B981, #34D399, #6EE7B7, #22C55E)',
+                    backgroundSize: '200% 200%',
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                  }}
+                  animate={{
+                    backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+                {/* Inner Background */}
+                <div className="absolute inset-[2px] rounded-3xl bg-gradient-to-br from-green-100 to-emerald-100" style={{ borderRadius: '22px' }} />
+                {/* Mobile Chat Interface with Rich Border */}
+                <div className="relative rounded-2xl p-6 overflow-hidden shadow-xl" style={{ borderRadius: '16px' }}>
+                  {/* Rich Animated Gradient Border */}
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl pointer-events-none"
+                    style={{
+                      padding: '2px',
+                      background: 'linear-gradient(135deg, #4B5563, #6B7280, #9CA3AF, #6B7280, #4B5563)',
+                      backgroundSize: '200% 200%',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                    }}
+                    animate={{
+                      backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                  />
+                  {/* Inner Background */}
+                  <div className="absolute inset-[2px] rounded-2xl bg-gray-800" style={{ borderRadius: '14px' }} />
+                  <div className="relative z-10">
+                  {/* AI Agent Header */}
+                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-gray-200" />
+                      <span className="font-semibold text-gray-100">AI agent</span>
+                    </div>
+                  </div>
+
+                  {/* Chain of Thought Overlay - Top Right */}
+                  <div className="absolute top-12 right-4 bg-white rounded-xl p-4 border-2 border-gray-200 shadow-2xl z-20 max-w-[280px]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Brain className="w-4 h-4 text-gray-700" />
+                      <span className="text-sm font-bold text-gray-900">AI agent chain of thought</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        "Search knowledge",
+                        "Retrieve order details",
+                        "Verify order is eligible for return",
+                        "Verify item selection for return",
+                      ].map((step, index) => (
+                        <div key={index} className="flex items-center gap-2 text-xs text-gray-700">
+                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <span>{step}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Chat Messages */}
+                  <div className="space-y-4 mt-8 relative z-10">
+                    {/* AI Agent Message */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center flex-shrink-0 border-2 border-gray-500">
+                        <Bot className="w-4 h-4 text-gray-100" />
+                      </div>
+                      <div className="flex-1 bg-gray-700/90 rounded-lg p-3 border border-gray-600">
+                        <p className="text-sm text-gray-100 font-medium">I'd like to help you with your return. Which items would you like to return?</p>
+                      </div>
+                    </div>
+
+                    {/* User Message */}
+                    <div className="flex items-start gap-3 justify-end">
+                      <div className="flex-1 bg-gray-600/90 rounded-lg p-3 border border-gray-500 max-w-[80%]">
+                        <p className="text-sm text-gray-100 font-medium">Hey Angela, which items would you like to return?</p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center flex-shrink-0 text-gray-100 text-xs font-semibold border-2 border-gray-400">
+                        A
+                      </div>
+                    </div>
+
+                    {/* Product Selection Cards */}
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      {[
+                        { name: "Snail Mucin Serum" },
+                        { name: "Saddle Tan Wallet" },
+                        { name: "French Soap Set" },
+                      ].map((product, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-700/90 rounded-lg p-2 border-2 border-gray-600 hover:border-gray-500 transition-all cursor-pointer shadow-sm"
+                        >
+                          <div className="w-full h-16 bg-gray-600 rounded mb-2 flex items-center justify-center border border-gray-500">
+                            <span className="text-xs text-gray-300">Image</span>
+                          </div>
+                          <p className="text-xs text-gray-100 font-medium mb-1 truncate">{product.name}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full text-xs h-6 border-gray-500 text-gray-100 hover:bg-gray-600 bg-gray-800"
+                          >
+                            Select
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Large Play Button Overlay - Centered with Clear Background */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-2xl z-30 pointer-events-none">
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-20 h-20 rounded-full bg-black/90 backdrop-blur-sm border-2 border-gray-300 flex items-center justify-center cursor-pointer shadow-2xl pointer-events-auto"
+                    >
+                      <Play className="w-10 h-10 text-white ml-1" fill="currentColor" />
+                    </motion.div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Use Cases Examples - Compact */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-12 max-w-6xl mx-auto"
+        >
+          <div className="text-center mb-6">
+            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">
+              Launch AI Agents in Minutes
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              See how custom agents work in real-world scenarios
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {useCases.map((useCase, index) => {
+              const Icon = useCase.icon;
+              return (
+                <motion.div
+                  key={useCase.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                  className="relative group"
+                >
+                  {/* Card with glassmorphism - Compact with Rich Animated Border */}
+                  <div className="relative rounded-xl p-4 overflow-hidden" style={{ borderRadius: '12px' }}>
+                    {/* Rich Animated Gradient Border - Color matched to use case */}
+                    <motion.div
+                      className="absolute inset-0 rounded-xl pointer-events-none"
+                      style={{
+                        padding: '1.5px',
+                        background: useCase.color.includes('green') 
+                          ? 'linear-gradient(135deg, #22C55E, #10B981, #34D399, #22C55E)'
+                          : useCase.color.includes('purple') 
+                          ? 'linear-gradient(135deg, #A855F7, #EC4899, #F472B6, #A855F7)'
+                          : useCase.color.includes('blue')
+                          ? 'linear-gradient(135deg, #3B82F6, #06B6D4, #22D3EE, #3B82F6)'
+                          : 'linear-gradient(135deg, #F97316, #EF4444, #F87171, #F97316)',
+                        backgroundSize: '200% 200%',
+                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                        WebkitMaskComposite: 'xor',
+                        maskComposite: 'exclude',
+                      }}
+                      animate={{
+                        backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      }}
+                    />
+                    {/* Inner Background - More Blurred */}
+                    <div className="absolute inset-[1.5px] rounded-xl bg-[#12162A]/80 backdrop-blur-2xl" style={{ borderRadius: '10.5px' }} />
+                    <div className="relative z-10 flex items-start gap-3">
+                      {/* Icon */}
+                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${useCase.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Title */}
+                        <h4 className="text-base font-semibold text-foreground mb-1">
+                          {useCase.title}
+                        </h4>
+
+                        {/* Description */}
+                        <p className="text-xs text-muted-foreground">
+                          {useCase.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+                {/* What Your Custom Agent Can Do - Enhanced Rich UI/UX */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                  className="mt-8"
+                >
+                  {/* Rich Container with Rich White Border */}
+                  <div className="relative rounded-3xl p-8 lg:p-10 shadow-2xl overflow-hidden border-2 border-white" style={{ borderRadius: '24px' }}>
+                    {/* Inner Background - More Blurred */}
+                    <div className="absolute inset-0 rounded-3xl bg-[#12162A]/90 backdrop-blur-2xl" style={{ borderRadius: '22px' }} />
+                    {/* Decorative Gradient Overlay */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 pointer-events-none" style={{ borderRadius: '22px' }} />
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      {/* Enhanced Header */}
+                      <div className="text-center mb-10">
+                        <h4 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground mb-4 tracking-tight leading-tight">
+                          What Your Custom Agent Can Do
+                        </h4>
+                        <p className="text-base md:text-lg text-muted-foreground/90 font-medium max-w-2xl mx-auto">
+                          Powerful capabilities to automate and enhance your business operations
+                        </p>
+                      </div>
+                      
+                      {/* Enhanced Grid with Rich Borders */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 lg:gap-8">
+                        {[
+                          {
+                            icon: MessageSquare,
+                            title: "Handle customer inquiries 24/7",
+                            color: "from-blue-500 to-cyan-500",
+                          },
+                          {
+                            icon: ShoppingCart,
+                            title: "Process orders and bookings automatically",
+                            color: "from-purple-500 to-pink-500",
+                          },
+                          {
+                            icon: Zap,
+                            title: "Analyze sentiment and resolve issues",
+                            color: "from-orange-500 to-red-500",
+                          },
+                          {
+                            icon: Globe,
+                            title: "Integrate with your existing tools",
+                            color: "from-green-500 to-emerald-500",
+                          },
+                          {
+                            icon: Sparkles,
+                            title: "Learn from your business data",
+                            color: "from-indigo-500 to-purple-500",
+                          },
+                          {
+                            icon: Rocket,
+                            title: "Scale with your business needs",
+                            color: "from-pink-500 to-rose-500",
+                          },
+                          {
+                            icon: Ticket,
+                            title: "Support ticket creation",
+                            color: "from-yellow-500 to-orange-500",
+                          },
+                          {
+                            icon: Clock,
+                            title: "Reminder tool",
+                            color: "from-teal-500 to-cyan-500",
+                          },
+                          {
+                            icon: FileCheck,
+                            title: "Docs convert tool",
+                            color: "from-violet-500 to-purple-500",
+                          },
+                        ].map((feature, index) => {
+                          const Icon = feature.icon;
+                          return (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.4, delay: 0.8 + index * 0.05 }}
+                              whileHover={{ y: -5, scale: 1.05 }}
+                              className="flex flex-col items-center gap-4 group cursor-pointer"
+                            >
+                              {/* Enhanced Icon Container with Rich White Border */}
+                              <div className="relative">
+                                {/* Outer Glow Effect */}
+                                <motion.div
+                                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.color} opacity-20 blur-xl group-hover:opacity-30 transition-opacity`}
+                                  animate={{
+                                    opacity: [0.2, 0.3, 0.2],
+                                  }}
+                                  transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                  }}
+                                />
+                                
+                                {/* Icon Container with White Border */}
+                                <div className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-2xl border-2 border-white/40 group-hover:border-white/60 transition-all duration-300 group-hover:shadow-3xl`}>
+                                  <Icon className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-lg" />
+                                  
+                                  {/* Inner Glow on Hover */}
+                                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </div>
+                              </div>
+                              
+                              {/* Enhanced Text with Better Typography */}
+                              <p className="text-sm md:text-base text-center text-foreground font-semibold leading-tight max-w-[140px] group-hover:text-primary transition-colors duration-300">
+                                {feature.title}
+                              </p>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+        </motion.div>
       </div>
     </section>
+    </TooltipProvider>
   );
 };
 

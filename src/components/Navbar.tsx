@@ -28,46 +28,51 @@ const Navbar = () => {
       style={{ background: 'transparent' }}
     >
       <div className="container mx-auto px-4 lg:px-6" style={{ maxWidth: '1100px' }}>
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-16">
           {/* Left Side - Logo */}
           <div className="flex items-center">
-            <a href="#" className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
+            <a href="#" className="flex items-center gap-3 group">
+              <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white group-hover:ring-white/80 transition-all duration-200">
                 <img 
                   src={logoDark} 
                   alt="AEKO" 
-                  className="w-10 h-10 object-contain" 
+                  className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-200" 
                 />
+              </div>
+              <div className="hidden lg:flex items-baseline gap-1">
+                <span className="text-xl font-bold text-white">AEKO</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">.Ai</span>
               </div>
             </a>
           </div>
 
           {/* Right Side - All Nav Links + CTA */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm text-white/90 hover:text-white transition-colors duration-200"
+                className="text-base md:text-lg font-semibold text-white/95 hover:text-white transition-all duration-200 hover:scale-105 relative group"
               >
                 {link.name}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300" />
               </a>
             ))}
             <Button
               variant="ghost"
-              size="sm"
+              size="default"
               onClick={() => navigate("/auth/sign-in")}
-              className="text-white/90 hover:text-white hover:bg-white/10"
+              className="text-base md:text-lg font-semibold text-white/95 hover:text-white hover:bg-white/10 px-5 py-2 rounded-lg transition-all duration-200"
             >
               Sign In
             </Button>
             <Button
               variant="default"
-              size="sm"
-              onClick={() => navigate("/dashboard/tools")}
-              className="bg-white text-black hover:bg-white/90"
+              size="default"
+              onClick={() => navigate("/auth/sign-in")}
+              className="text-base md:text-lg font-bold bg-white text-black hover:bg-white/90 px-8 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
-              Start Creating
+              Launch
             </Button>
           </div>
 
@@ -116,10 +121,10 @@ const Navbar = () => {
                 className="w-full"
                 onClick={() => {
                   setIsOpen(false);
-                  navigate("/dashboard/tools");
+                  navigate("/auth/sign-in");
                 }}
               >
-                Start Creating
+                Launch
               </Button>
             </div>
           </div>

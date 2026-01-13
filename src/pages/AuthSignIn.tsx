@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Loader2, Apple, Chrome } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authAPI } from "@/lib/api";
 import { toast } from "sonner";
-import hero from "@/assets/hero-bg.jpg";
+import logoDark from "@/assets/ChatGPT Image Dec 25, 2025, 03_45_44 PM.png";
 
 declare global {
   interface Window {
@@ -27,11 +27,12 @@ const AuthSignIn = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   const handleGoogleCallback = useCallback(async (response: any) => {
     setIsGoogleLoading(true);
     try {
-      // Send Google credential to backend
       const res = await authAPI.googleLogin(response.credential);
       if (res.success) {
         toast.success("Welcome! Signed in with Google");
@@ -47,14 +48,12 @@ const AuthSignIn = () => {
     }
   }, [navigate]);
 
-  // Load Google Identity Services
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      // Initialize Google Sign-In (using a demo client ID - replace with yours)
       if (window.google) {
         window.google.accounts.id.initialize({
           client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "",
@@ -79,12 +78,23 @@ const AuthSignIn = () => {
     }
     setIsLoading(true);
     try {
-      const res = await authAPI.login(email, password);
-      if (res.success) {
-        toast.success("Welcome back!");
-        navigate("/dashboard");
+      if (isSignUp) {
+        // Registration logic - you may need to add name field
+        const res = await authAPI.register(email.split("@")[0], email, password);
+        if (res.success) {
+          toast.success("Account created! Welcome!");
+          navigate("/dashboard");
+        } else {
+          toast.error(res.message || "Registration failed");
+        }
       } else {
-        toast.error(res.message || "Invalid credentials");
+        const res = await authAPI.login(email, password);
+        if (res.success) {
+          toast.success("Welcome back!");
+          navigate("/dashboard");
+        } else {
+          toast.error(res.message || "Invalid credentials");
+        }
       }
     } catch (error: any) {
       console.error(error);
@@ -101,12 +111,8 @@ const AuthSignIn = () => {
     }
     if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
       toast.info(
-        "Google OAuth is not configured. To enable Google sign-in:\n" +
-        "1. Get a Client ID from https://console.cloud.google.com/\n" +
-        "2. Add VITE_GOOGLE_CLIENT_ID=your_client_id to your .env file\n" +
-        "3. Restart the dev server\n\n" +
-        "For now, please use email/password login.",
-        { duration: 6000 }
+        "Google OAuth is not configured. Please use email/password login.",
+        { duration: 4000 }
       );
       return;
     }
@@ -115,140 +121,250 @@ const AuthSignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
-      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 glass-card rounded-3xl overflow-hidden border border-border/60 bg-background/80">
-        {/* Left visual */}
-        <div className="relative hidden md:block">
-          <img
-            src={hero}
-            alt="AI creative"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              AEKO CREATIVE SUITE
-            </p>
-            <p className="text-lg font-semibold text-foreground">
-              Log in to unlock your AI workspace: chat, tools, and media generation.
-            </p>
-          </div>
-        </div>
-
-        {/* Right form */}
+    <div className="min-h-screen flex bg-[#0a0a1a]">
+      {/* Left Panel - Login/Signup UI */}
+      <div className="w-full lg:w-[480px] bg-[#12162A] flex flex-col p-8 lg:p-12 relative z-10">
+        {/* Logo */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-          className="p-6 md:p-8 flex flex-col justify-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-3 mb-12"
         >
-          <div className="mb-6">
-            <p className="text-xs text-muted-foreground mb-1">Welcome back</p>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Sign in to Aeko
-            </h1>
+          <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
+            <img 
+              src={logoDark} 
+              alt="AEKO" 
+              className="w-10 h-10 object-contain" 
+            />
           </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-white">AEKO</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">.Ai</span>
+          </div>
+        </motion.div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+        {/* Sign up or Login with */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-8"
+        >
+          <h2 className="text-white text-2xl font-semibold mb-1">
+            {isSignUp ? "Create your account" : "Sign up or Login with"}
+          </h2>
+          <p className="text-gray-400 text-sm">
+            {isSignUp ? "Join AEKO Creative Suite today" : "Get started with AI-powered creativity"}
+          </p>
+        </motion.div>
+
+        {/* Login Options */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="space-y-3 flex-1"
+        >
+          {/* Canva */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
+            onClick={() => toast.info("Canva integration coming soon")}
+          >
+            <div className="w-6 h-6 rounded-full bg-teal-500 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">C</span>
+            </div>
+            <span className="font-medium">Canva</span>
+          </Button>
+
+          {/* Apple */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
+            onClick={() => toast.info("Apple sign-in coming soon")}
+          >
+            <Apple className="w-5 h-5 text-white" />
+            <span className="font-medium">Apple</span>
+          </Button>
+
+          {/* Google */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading}
+          >
+            {isGoogleLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+                <span className="text-[10px] font-bold text-[#4285F4]">G</span>
+              </div>
+            )}
+            <span className="font-medium">Google</span>
+          </Button>
+
+          {/* Microsoft */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
+            onClick={() => toast.info("Microsoft sign-in coming soon")}
+          >
+            <div className="w-5 h-5 flex items-center justify-center">
+              <div className="w-3 h-3 bg-[#00A4EF]"></div>
+            </div>
+            <span className="font-medium">Microsoft</span>
+          </Button>
+
+          {/* Continue with Email */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white justify-start gap-3 rounded-xl"
+            onClick={() => setShowEmailForm(!showEmailForm)}
+          >
+            <Mail className="w-5 h-5 text-white" />
+            <span className="font-medium">Continue with Email</span>
+          </Button>
+
+          {/* Email/Password Form - Show when Continue with Email is clicked */}
+          {showEmailForm && (
+            <motion.form
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              onSubmit={handleSubmit}
+              className="mt-4 space-y-4 p-4 bg-[#1a1f3a] rounded-xl border border-[#2a2f4a]"
+            >
+              <div>
                 <Input
                   type="email"
-                  autoComplete="email"
-                  placeholder="you@gmail.com"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-9 bg-background/60"
+                  className="bg-[#0f1320] border-[#2a2f4a] text-white placeholder:text-gray-500"
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              <div>
                 <Input
                   type="password"
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-9 bg-background/60"
+                  className="bg-[#0f1320] border-[#2a2f4a] text-white placeholder:text-gray-500"
                 />
               </div>
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Use the email and password you registered with (Gmail works too).</span>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full mt-2 gap-2"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsSignUp(false)}
+                  className={`flex-1 border-[#2a2f4a] text-white ${
+                    !isSignUp ? "bg-purple-500/20 border-purple-500" : "bg-[#0f1320]"
+                  }`}
+                >
                   Sign In
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </Button>
-          </form>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsSignUp(true)}
+                  className={`flex-1 border-[#2a2f4a] text-white ${
+                    isSignUp ? "bg-purple-500/20 border-purple-500" : "bg-[#0f1320]"
+                  }`}
+                >
+                  Sign Up
+                </Button>
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    {isSignUp ? "Creating account..." : "Signing in..."}
+                  </>
+                ) : (
+                  isSignUp ? "Create Account" : "Sign In"
+                )}
+              </Button>
+            </motion.form>
+          )}
 
-          <div className="mt-6 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">
-                Or continue with
-              </span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
+          {/* Need help link */}
+          <div className="pt-4">
+            <Link to="#" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+              Need help?
+            </Link>
+          </div>
+        </motion.div>
 
+        {/* Mobile App Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-auto pt-8"
+        >
+          <p className="text-white text-sm mb-4">Available now on iOS and Android</p>
+          <div className="flex gap-3">
             <Button
-              type="button"
               variant="outline"
-              className="w-full flex items-center justify-center gap-2 rounded-full border-border/70 bg-background hover:bg-secondary/60"
-              onClick={handleGoogleSignIn}
-              disabled={isGoogleLoading}
+              className="flex-1 h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white rounded-xl"
+              onClick={() => toast.info("App Store link coming soon")}
             >
-              {isGoogleLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm font-medium text-foreground">
-                    Signing in with Google...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white">
-                    <span className="text-[12px] font-bold text-[#4285F4]">G</span>
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    Continue with Google
-                  </span>
-                </>
-              )}
+              <Apple className="w-5 h-5 mr-2" />
+              <span className="text-xs">App Store</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 h-12 bg-[#1a1f3a] border-[#2a2f4a] hover:bg-[#252a4a] text-white rounded-xl"
+              onClick={() => toast.info("Google Play link coming soon")}
+            >
+              <Chrome className="w-5 h-5 mr-2" />
+              <span className="text-xs">Google Play</span>
             </Button>
           </div>
         </motion.div>
+      </div>
+
+      {/* Right Panel - Background Image */}
+      <div className="hidden lg:flex flex-1 relative overflow-hidden">
+        {/* Futuristic Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1920&q=80')`,
+          }}
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#12162A]/80 via-[#12162A]/60 to-transparent" />
+        {/* Animated Glow Effects */}
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            background: [
+              "radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.25) 0%, transparent 50%)",
+              "radial-gradient(circle at 60% 20%, rgba(34, 211, 238, 0.3) 0%, transparent 50%), radial-gradient(circle at 30% 80%, rgba(168, 85, 247, 0.25) 0%, transparent 50%)",
+              "radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.25) 0%, transparent 50%)",
+            ],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
       </div>
     </div>
   );
 };
 
 export default AuthSignIn;
-
-
-

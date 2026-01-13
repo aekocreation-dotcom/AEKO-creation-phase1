@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +22,7 @@ import {
   Library,
   Settings,
   Coins,
+  Star,
 } from "lucide-react";
 import logoDark from "@/assets/ChatGPT Image Dec 25, 2025, 03_45_44 PM.png";
 // import logoLight from "@/assets/ak-logo.png"; // Uncomment when you add the AK logo file
@@ -87,7 +89,8 @@ const DashboardLayout = () => {
     // Clear auth state (localStorage) and redirect to landing page
     authAPI.logout();
     toast.success("You have been logged out");
-    navigate("/");
+    // Force a full page reload to ensure clean state
+    window.location.href = "/";
   };
 
   const user = authAPI.getCurrentUser();
@@ -98,11 +101,41 @@ const DashboardLayout = () => {
       {/* Sidebar - Redesigned with Labels */}
       <TooltipProvider>
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-16 bg-card/95 backdrop-blur-xl border-r border-border/50 transform transition-transform duration-300 lg:translate-x-0 rounded-r-2xl ${
+          className={`fixed inset-y-0 left-0 z-50 w-16 backdrop-blur-xl transform transition-transform duration-300 lg:translate-x-0 rounded-r-2xl ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
+          style={{
+            borderRadius: '16px',
+          }}
         >
-          <div className="flex flex-col h-full">
+          {/* Animated Gradient Border */}
+          <motion.div
+            className="absolute inset-0 rounded-r-2xl pointer-events-none"
+            style={{
+              padding: '1.5px',
+              background: 'linear-gradient(135deg, #7C3AED, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899)',
+              backgroundSize: '200% 200%',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+          {/* Background */}
+          <div
+            className="absolute inset-[1.5px] rounded-r-2xl bg-[#12162A] backdrop-blur-xl"
+            style={{
+              borderRadius: '14px',
+            }}
+          />
+          <div className="flex flex-col h-full relative z-10">
             {/* Logo/Avatar */}
             <div className="flex items-center justify-center py-5 border-b border-border/50 relative">
               <Tooltip>
@@ -141,13 +174,33 @@ const DashboardLayout = () => {
                       <Link
                         to={item.path}
                         onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                        className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
                           isActive
-                            ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                            ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
+                        {/* Glow effect for active items */}
+                        {isActive && (
+                          <motion.div
+                            className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
+                            animate={{
+                              opacity: [0.5, 0.8, 0.5],
+                              scale: [1, 1.1, 1],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        )}
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                        </motion.div>
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">
@@ -163,13 +216,49 @@ const DashboardLayout = () => {
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-                      className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                      className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
                         isToolsActive
-                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                       }`}
                     >
-                      <MessageSquare className="w-5 h-5" />
+                      {/* Glow effect for active items */}
+                      {isToolsActive && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
+                          animate={{
+                            opacity: [0.5, 0.8, 0.5],
+                            scale: [1, 1.1, 1],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        />
+                      )}
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative"
+                      >
+                        <MessageSquare className={`w-5 h-5 ${isToolsActive ? 'drop-shadow-lg' : ''}`} />
+                        {/* Star Icon Badge */}
+                        <motion.div
+                          className="absolute -top-1 -right-1"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        >
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-md" />
+                        </motion.div>
+                      </motion.div>
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="right">
@@ -196,13 +285,33 @@ const DashboardLayout = () => {
                                   onClick={() => {
                                     setSidebarOpen(false);
                                   }}
-                                  className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                                  className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
                                     isActive
-                                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
                                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                                   }`}
                                 >
-                                  <Icon className="w-4 h-4" />
+                                  {/* Glow effect for active items */}
+                                  {isActive && (
+                                    <motion.div
+                                      className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
+                                      animate={{
+                                        opacity: [0.5, 0.8, 0.5],
+                                        scale: [1, 1.1, 1],
+                                      }}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                      }}
+                                    />
+                                  )}
+                                  <motion.div
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                  >
+                                    <Icon className={`w-4 h-4 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                                  </motion.div>
                                 </Link>
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -223,13 +332,33 @@ const DashboardLayout = () => {
                   <Link
                     to="/dashboard/agent-store"
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                    className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
                       location.pathname === "/dashboard/agent-store"
-                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                     }`}
                   >
-                    <Store className="w-5 h-5" />
+                    {/* Glow effect for active items */}
+                    {location.pathname === "/dashboard/agent-store" && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
+                        animate={{
+                          opacity: [0.5, 0.8, 0.5],
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    )}
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Store className={`w-5 h-5 ${location.pathname === "/dashboard/agent-store" ? 'drop-shadow-lg' : ''}`} />
+                    </motion.div>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -246,13 +375,33 @@ const DashboardLayout = () => {
                   <Link
                     to="/dashboard/account"
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                    className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
                       location.pathname === "/dashboard/account"
-                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                     }`}
                   >
-                    <Settings className="w-5 h-5" />
+                    {/* Glow effect for active items */}
+                    {location.pathname === "/dashboard/account" && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
+                        animate={{
+                          opacity: [0.5, 0.8, 0.5],
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    )}
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Settings className={`w-5 h-5 ${location.pathname === "/dashboard/account" ? 'drop-shadow-lg' : ''}`} />
+                    </motion.div>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -266,13 +415,49 @@ const DashboardLayout = () => {
               {/* Currency Display */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center justify-center w-10 h-10 rounded-xl">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer group"
+                  >
                     <div className="relative">
-                      <div className="absolute -top-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-card" />
-                      <div className="absolute top-0 left-0 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 border-2 border-card" />
-                      <Coins className="w-4 h-4 text-foreground relative z-10" />
+                      {/* Animated gradient coins */}
+                      <motion.div
+                        className="absolute -top-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-card"
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      />
+                      <motion.div
+                        className="absolute top-0 left-0 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 border-2 border-card"
+                        animate={{
+                          rotate: [360, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      />
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Coins className="w-4 h-4 text-foreground relative z-10 drop-shadow-md group-hover:text-primary transition-colors" />
+                      </motion.div>
                     </div>
-                  </div>
+                  </motion.div>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <p>142 Credits</p>
@@ -282,13 +467,33 @@ const DashboardLayout = () => {
               {/* Upgrade Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    to="/dashboard/account"
-                    onClick={() => setSidebarOpen(false)}
-                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white transition-all shadow-lg hover:shadow-xl"
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <CreditCard className="w-5 h-5" />
-                  </Link>
+                    <Link
+                      to="/dashboard/account"
+                      onClick={() => setSidebarOpen(false)}
+                      className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white transition-all shadow-lg hover:shadow-xl overflow-hidden group"
+                    >
+                      {/* Animated gradient overlay */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        animate={{
+                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
+                        style={{
+                          backgroundSize: '200% 100%',
+                        }}
+                      />
+                      <CreditCard className="w-5 h-5 relative z-10 drop-shadow-lg" />
+                    </Link>
+                  </motion.div>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <p>Upgrade</p>
@@ -300,11 +505,27 @@ const DashboardLayout = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-secondary/30 transition-all">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-xs">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative flex items-center justify-center w-10 h-10 rounded-xl hover:bg-secondary/30 transition-all group"
+                      >
+                        {/* Glow effect on hover */}
+                        <motion.div
+                          className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                          animate={{
+                            opacity: [0, 0.5, 0],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        />
+                        <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-xs shadow-lg ring-2 ring-purple-500/30">
                           {userInitial}
                         </div>
-                      </button>
+                      </motion.button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
                   <TooltipContent side="right">
@@ -344,7 +565,7 @@ const DashboardLayout = () => {
       </TooltipProvider>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-16 overflow-x-hidden">
+      <div className="flex-1 lg:ml-16 overflow-x-hidden flex flex-col min-h-0">
         {/* Mobile Menu Button - Floating */}
         <button
           onClick={() => setSidebarOpen(true)}
@@ -354,7 +575,7 @@ const DashboardLayout = () => {
         </button>
 
         {/* Page Content */}
-        <main className="p-1 lg:p-2">
+        <main className="p-1 lg:p-2 flex-1 flex flex-col min-h-0">
           <Outlet />
         </main>
       </div>

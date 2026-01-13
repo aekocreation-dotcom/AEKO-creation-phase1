@@ -58,7 +58,7 @@ const ImageToolsPage = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="absolute inset-0 flex flex-col relative overflow-y-auto">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
@@ -69,7 +69,7 @@ const ImageToolsPage = () => {
       <div className="relative z-10 space-y-6 p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-2"
         >
@@ -79,9 +79,8 @@ const ImageToolsPage = () => {
 
         {/* Tool Selection */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
           className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
         >
           {imageTools.map((tool) => {
@@ -111,9 +110,8 @@ const ImageToolsPage = () => {
 
         {/* Main Tool Interface */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
           className="grid lg:grid-cols-3 gap-6"
         >
           {/* Left: Input Area */}

@@ -56,33 +56,42 @@ const MasonryCard = ({
     }
   };
 
-  // Random aspect ratio for masonry effect
-  const aspectRatios = ['aspect-square', 'aspect-[3/4]', 'aspect-[4/5]', 'aspect-[2/3]'];
+  // Varied aspect ratios for masonry effect - more diverse patterns
+  const aspectRatios = [
+    'aspect-square', 
+    'aspect-[3/4]', 
+    'aspect-[4/5]', 
+    'aspect-[2/3]',
+    'aspect-[5/4]',
+    'aspect-[4/3]',
+    'aspect-[16/9]',
+    'aspect-[9/16]'
+  ];
   const aspectRatio = aspectRatios[item.id % aspectRatios.length];
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative rounded-lg overflow-hidden cursor-pointer group"
+      className="relative rounded-xl overflow-hidden cursor-pointer group border border-border/50 bg-card shadow-sm hover:shadow-lg hover:border-border transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
-      <div className={`relative ${aspectRatio} overflow-hidden bg-secondary`}>
+      <div className={`relative ${aspectRatio} overflow-hidden bg-secondary/50`}>
         <img
           src={item.thumbnailUrl || item.mediaUrl}
           alt={item.prompt}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
 
         {/* Video indicator */}
         {item.type === "video" && (
-          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
-              <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-foreground ml-0.5" />
+          <div className="absolute top-2 right-2 z-10">
+            <div className="w-7 h-7 rounded-full bg-background/90 backdrop-blur-md border border-border/50 flex items-center justify-center shadow-lg">
+              <Play className="w-3.5 h-3.5 text-foreground ml-0.5" />
             </div>
           </div>
         )}
@@ -94,56 +103,61 @@ const MasonryCard = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"
+              className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent backdrop-blur-[2px]"
             >
               {/* Bottom info */}
-              <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-2">
+              <div className="absolute bottom-0 left-0 right-0 p-2.5 sm:p-3">
                 {/* Author info */}
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <div className="flex items-center gap-2 mb-2">
                   <img 
                     src={item.author.avatar} 
                     alt={item.author.username}
-                    className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover ring-1 ring-border"
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover ring-2 ring-background/50 border border-border/50"
                   />
-                  <span className="text-xs font-medium text-foreground truncate">
+                  <span className="text-xs sm:text-sm font-semibold text-foreground truncate drop-shadow-sm">
                     {item.author.username}
                   </span>
+                  {item.author.verified && (
+                    <div className="w-3 h-3 rounded-full bg-blue-500 flex items-center justify-center">
+                      <span className="text-[8px] text-white">✓</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button 
                       onClick={(e) => { e.stopPropagation(); onLike(item.id); }}
-                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1.5 rounded-lg bg-background/70 hover:bg-background/90 backdrop-blur-sm border border-border/50 transition-all hover:scale-110"
                     >
                       <Heart 
-                        className={`w-3 h-3 ${
+                        className={`w-3.5 h-3.5 ${
                           item.isLiked ? 'text-red-500 fill-red-500' : 'text-foreground'
                         }`} 
                       />
                     </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); onSave(item.id); }}
-                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1.5 rounded-lg bg-background/70 hover:bg-background/90 backdrop-blur-sm border border-border/50 transition-all hover:scale-110"
                     >
                       <Bookmark 
-                        className={`w-3 h-3 ${
+                        className={`w-3.5 h-3.5 ${
                           item.isSaved ? 'text-foreground fill-foreground' : 'text-foreground'
                         }`} 
                       />
                     </button>
                     <button 
                       onClick={handleCopyPrompt}
-                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1.5 rounded-lg bg-background/70 hover:bg-background/90 backdrop-blur-sm border border-border/50 transition-all hover:scale-110"
                     >
-                      <Copy className="w-3 h-3 text-foreground" />
+                      <Copy className="w-3.5 h-3.5 text-foreground" />
                     </button>
                     <button 
                       onClick={handleDownload}
-                      className="p-1 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+                      className="p-1.5 rounded-lg bg-background/70 hover:bg-background/90 backdrop-blur-sm border border-border/50 transition-all hover:scale-110"
                     >
-                      <Download className="w-3 h-3 text-foreground" />
+                      <Download className="w-3.5 h-3.5 text-foreground" />
                     </button>
                   </div>
                 </div>

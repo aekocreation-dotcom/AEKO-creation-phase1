@@ -18,6 +18,9 @@ import {
   Sun,
   Moon,
   Store,
+  Library,
+  Settings,
+  Coins,
 } from "lucide-react";
 import logoDark from "@/assets/ChatGPT Image Dec 25, 2025, 03_45_44 PM.png";
 // import logoLight from "@/assets/ak-logo.png"; // Uncomment when you add the AK logo file
@@ -28,14 +31,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { authAPI } from "@/lib/api";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
 
 const navItems = [
-  { path: "/dashboard", icon: Home, label: "Dashboard" },
-  { path: "/dashboard/feed", icon: Compass, label: "Feed" },
-  { path: "/dashboard/support", icon: HelpCircle, label: "Support" },
+  { path: "/dashboard", icon: Home, label: "Home" },
+  { path: "/dashboard/feed", icon: Library, label: "Library" },
 ];
 
 const toolsSubItems = [
@@ -81,26 +90,31 @@ const DashboardLayout = () => {
     navigate("/");
   };
 
+  const user = authAPI.getCurrentUser();
+  const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
+
   return (
-    <div className="min-h-screen bg-background flex w-full overflow-x-hidden" style={{ maxWidth: '90vw', margin: '0 auto' }}>
-      {/* Sidebar - Icon Only with Tooltips */}
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
+      {/* Sidebar - Redesigned with Labels */}
       <TooltipProvider>
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-16 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 w-16 bg-card/95 backdrop-blur-xl border-r border-border/50 transform transition-transform duration-300 lg:translate-x-0 rounded-r-2xl ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="flex flex-col h-full">
-            {/* Logo */}
-            <div className="flex items-center justify-center py-5 border-b border-border relative">
+            {/* Logo/Avatar */}
+            <div className="flex items-center justify-center py-5 border-b border-border/50 relative">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to="/" className="flex items-center justify-center">
-                    <img 
-                      src={logoDark} 
-                      alt="AEKO" 
-                      className="w-10 h-10 object-contain" 
-                    />
+                    <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
+                      <img 
+                        src={logoDark} 
+                        alt="AEKO" 
+                        className="w-10 h-10 object-contain" 
+                      />
+                    </div>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -116,20 +130,20 @@ const DashboardLayout = () => {
             </div>
 
             {/* Navigation - Icon Only with Tooltips */}
-            <nav className="flex-1 px-2 py-6 space-y-1 overflow-y-auto">
-              {/* 1. Dashboard */}
-              {navItems.filter(item => item.path === "/dashboard").map((item) => {
+            <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+              {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+                const isActive = location.pathname === item.path || 
+                  (item.path === "/dashboard" && location.pathname === "/dashboard");
                 return (
                   <Tooltip key={item.path}>
                     <TooltipTrigger asChild>
                       <Link
                         to={item.path}
                         onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                        className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
                           isActive
-                            ? "gradient-active-nav text-foreground"
+                            ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
@@ -143,45 +157,19 @@ const DashboardLayout = () => {
                 );
               })}
 
-              {/* 2. Feed */}
-              {navItems.filter(item => item.path === "/dashboard/feed").map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                return (
-                  <Tooltip key={item.path}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={item.path}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                          isActive
-                            ? "gradient-active-nav text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>{item.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
-
-              {/* 3. AI Tools with Dropdown */}
+              {/* AI Tools with Dropdown */}
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-                      className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                      className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
                         isToolsActive
-                          ? "bg-pink-500/20 text-foreground"
+                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                       }`}
                     >
-                      <Wrench className="w-5 h-5" />
+                      <MessageSquare className="w-5 h-5" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="right">
@@ -208,9 +196,9 @@ const DashboardLayout = () => {
                                   onClick={() => {
                                     setSidebarOpen(false);
                                   }}
-                                  className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                                  className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
                                     isActive
-                                      ? "gradient-active-nav text-foreground"
+                                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
                                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                                   }`}
                                 >
@@ -229,15 +217,15 @@ const DashboardLayout = () => {
                 </AnimatePresence>
               </div>
 
-              {/* 4. Agent Store */}
+              {/* Agent Store */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
                     to="/dashboard/agent-store"
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
                       location.pathname === "/dashboard/agent-store"
-                        ? "bg-pink-500/20 text-foreground"
+                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                     }`}
                   >
@@ -249,52 +237,45 @@ const DashboardLayout = () => {
                 </TooltipContent>
               </Tooltip>
 
-              {/* 5. Support */}
-              {navItems.filter(item => item.path === "/dashboard/support").map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                return (
-                  <Tooltip key={item.path}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={item.path}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                          isActive
-                            ? "gradient-active-nav text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>{item.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
-            </nav>
+              {/* Divider */}
+              <div className="h-px bg-border/50 my-2" />
 
-            {/* Bottom Actions */}
-            <div className="px-2 pb-2 space-y-1 border-t border-border/50 pt-2 mt-auto">
-              {/* Theme Toggle */}
+              {/* Settings */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    onClick={toggleTheme}
-                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
-                    title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                  <Link
+                    to="/dashboard/account"
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                      location.pathname === "/dashboard/account"
+                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                    }`}
                   >
-                    {theme === "dark" ? (
-                      <Sun className="w-5 h-5" />
-                    ) : (
-                      <Moon className="w-5 h-5" />
-                    )}
-                  </button>
+                    <Settings className="w-5 h-5" />
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p>{theme === "dark" ? "Light Mode" : "Dark Mode"}</p>
+                  <p>Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </nav>
+
+            {/* Bottom Section */}
+            <div className="px-2 pb-2 space-y-1 border-t border-border/50 pt-2 mt-auto">
+              {/* Currency Display */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl">
+                    <div className="relative">
+                      <div className="absolute -top-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-card" />
+                      <div className="absolute top-0 left-0 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 border-2 border-card" />
+                      <Coins className="w-4 h-4 text-foreground relative z-10" />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>142 Credits</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -303,7 +284,8 @@ const DashboardLayout = () => {
                 <TooltipTrigger asChild>
                   <Link
                     to="/dashboard/account"
-                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white transition-all shadow-lg hover:shadow-xl"
                   >
                     <CreditCard className="w-5 h-5" />
                   </Link>
@@ -313,38 +295,49 @@ const DashboardLayout = () => {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Account Icon */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    to="/dashboard/account"
-                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-medium text-sm">
-                      A
-                    </div>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Account</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Logout */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Logout</p>
-                </TooltipContent>
-              </Tooltip>
+              {/* User Profile Dropdown */}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-secondary/30 transition-all">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-xs">
+                          {userInitial}
+                        </div>
+                      </button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>Account</p>
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard/account" className="cursor-pointer">
+                      <User className="w-4 h-4 mr-2" />
+                      Account
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
+                    {theme === "dark" ? (
+                      <>
+                        <Sun className="w-4 h-4 mr-2" />
+                        Light Mode
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="w-4 h-4 mr-2" />
+                        Dark Mode
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </aside>

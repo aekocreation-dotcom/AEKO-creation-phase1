@@ -31,13 +31,14 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-14">
           {/* Left Side - Logo */}
           <div className="flex items-center">
-            <a href="#" className="flex items-center gap-2">
-              <img 
-                src={logoDark} 
-                alt="AEKO" 
-                className="w-8 h-8 object-contain" 
-              />
-              <span className="text-lg font-bold text-white">AEKO</span>
+            <a href="#" className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-transparent flex items-center justify-center ring-2 ring-white">
+                <img 
+                  src={logoDark} 
+                  alt="AEKO" 
+                  className="w-10 h-10 object-contain" 
+                />
+              </div>
             </a>
           </div>
 

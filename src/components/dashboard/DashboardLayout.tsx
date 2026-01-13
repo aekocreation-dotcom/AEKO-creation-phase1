@@ -85,6 +85,20 @@ const DashboardLayout = () => {
     }
   }, [isToolsActive]);
 
+  // Scroll to top and ensure content visibility on route change
+  useEffect(() => {
+    // Scroll main content area to top
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.scrollTop = 0;
+    }
+    // Force a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     // Clear auth state (localStorage) and redirect to landing page
     authAPI.logout();
@@ -97,7 +111,7 @@ const DashboardLayout = () => {
   const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
+    <div className="h-screen bg-background flex w-full overflow-hidden">
       {/* Sidebar - Redesigned with Labels */}
       <TooltipProvider>
         <aside
@@ -565,7 +579,7 @@ const DashboardLayout = () => {
       </TooltipProvider>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-16 overflow-x-hidden flex flex-col min-h-0">
+      <div className="flex-1 lg:ml-16 overflow-x-hidden flex flex-col h-screen">
         {/* Mobile Menu Button - Floating */}
         <button
           onClick={() => setSidebarOpen(true)}
@@ -575,7 +589,7 @@ const DashboardLayout = () => {
         </button>
 
         {/* Page Content */}
-        <main className="p-1 lg:p-2 flex-1 flex flex-col min-h-0">
+        <main className="p-1 lg:p-2 flex-1 flex flex-col relative overflow-hidden" key={location.pathname}>
           <Outlet />
         </main>
       </div>

@@ -563,8 +563,13 @@ const AgentLLMPage = () => {
         <div className="w-full" style={{ maxWidth: '768px', margin: '0 auto', paddingLeft: 'clamp(16px, 4vw, 24px)', paddingRight: 'clamp(16px, 4vw, 24px)', boxSizing: 'border-box' }}>
           <div className="relative w-full" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
             <div 
-              className="flex items-end gap-2 bg-card border border-border rounded-2xl shadow-lg hover:shadow-xl transition-all focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20"
-              style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
+              className="relative flex items-end gap-2 bg-transparent rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              style={{ 
+                width: '100%', 
+                maxWidth: '100%', 
+                boxSizing: 'border-box',
+                border: '2px solid rgba(255, 255, 255, 0.9)',
+              }}
               onFocus={() => setIsInputFocused(true)}
               onBlur={(e) => {
                 // Only blur if focus is not moving to another element in the input area
@@ -573,6 +578,38 @@ const AgentLLMPage = () => {
                 }
               }}
             >
+              {/* Animated White Light Effect */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
+                  backgroundSize: '200% 100%',
+                }}
+                animate={{
+                  backgroundPosition: ['-200% 0', '200% 0'],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }}
+              />
+              
+              {/* Pulsing Glow Effect */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl pointer-events-none"
+                style={{
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.3)',
+                }}
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
               {/* Plus Icon with Agent Options Dropdown - Left Side */}
               <DropdownMenu open={isAgentMenuOpen} onOpenChange={setIsAgentMenuOpen}>
                 <DropdownMenuTrigger asChild>
@@ -712,7 +749,11 @@ const AgentLLMPage = () => {
               >
                 <Paperclip className="w-4 h-4 text-muted-foreground" />
               </button>
-              <div className="flex-1 relative min-w-0" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+              <div className="flex-1 relative min-w-0 z-10" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+                {/* Mountain Icon */}
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-shrink-0">
+                  <Upload className="w-5 h-5 text-white" />
+                </div>
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -727,10 +768,16 @@ const AgentLLMPage = () => {
                       }
                     }, 200);
                   }}
-                  placeholder="Message AEKO..."
+                  placeholder="Type a prompt..."
                   rows={1}
-                  className="w-full px-2 py-3 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none overflow-hidden text-sm leading-relaxed"
-                  style={{ minHeight: "52px", maxHeight: "200px", width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
+                  className="w-full pl-12 pr-14 py-4 bg-transparent text-white placeholder:text-white/80 focus:outline-none resize-none transition-all relative z-10 overflow-y-auto"
+                  style={{ 
+                    minHeight: "56px", 
+                    maxHeight: "120px", 
+                    width: '100%', 
+                    maxWidth: '100%', 
+                    boxSizing: 'border-box' 
+                  }}
                 />
               </div>
               <div className="flex items-center gap-1 pr-2 flex-shrink-0">

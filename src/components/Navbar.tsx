@@ -1,8 +1,14 @@
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageSquare, Image, Video, Sparkles, Bot, Plug, Film, Mic, Zap, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logoDark from "@/assets/ChatGPT Image Dec 25, 2025, 03_45_44 PM.png";
 // import logoLight from "@/assets/ak-logo.png"; // Uncomment when you add the AK logo file
 import { useTheme } from "@/hooks/use-theme";
@@ -12,9 +18,67 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
+  const modelsMenuItems = [
+    { 
+      name: "LLM Agent", 
+      icon: MessageSquare, 
+      path: "/dashboard/tools/agent",
+      description: "Chat with AI agents"
+    },
+    { 
+      name: "Image Generation", 
+      icon: Image, 
+      path: "/dashboard/tools/image",
+      description: "Create stunning images"
+    },
+    { 
+      name: "Video Generation", 
+      icon: Video, 
+      path: "/dashboard/tools/video",
+      description: "Generate videos with AI"
+    },
+    { 
+      name: "Custom Agent", 
+      icon: Sparkles, 
+      path: "/dashboard/agent-store",
+      description: "Build your own agent"
+    },
+  ];
+
+  const featuresMenuItems = [
+    {
+      name: "Custom AI Agent",
+      icon: Bot,
+      path: "/dashboard/agent-store",
+      description: "Build and customize AI agents",
+    },
+    {
+      name: "Tool Integration",
+      icon: Plug,
+      path: "/dashboard/tools",
+      description: "Integrate with your favorite tools",
+    },
+    {
+      name: "Image and Video Generation",
+      icon: Film,
+      path: "/dashboard/tools/image",
+      description: "Create images and videos with AI",
+    },
+    {
+      name: "Voice AI Agent",
+      icon: Mic,
+      path: "/dashboard/tools/agent",
+      description: "Interact with voice-enabled AI",
+    },
+    {
+      name: "Advanced AI Tools",
+      icon: Zap,
+      path: "/dashboard/tools",
+      description: "Powerful AI tools and utilities",
+    },
+  ];
+
   const navLinks = [
-    { name: "Models", href: "#models" },
-    { name: "Features", href: "#features" },
     { name: "Pricing", href: "#pricing" },
     { name: "API", href: "#developers" },
   ];
@@ -43,6 +107,62 @@ const Navbar = () => {
 
           {/* Right Side - All Nav Links + CTA */}
           <div className="hidden md:flex items-center gap-6">
+            {/* Models Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-sm text-white/90 hover:text-white transition-colors duration-200 flex items-center gap-1">
+                  Models
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64">
+                {modelsMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem
+                      key={item.path}
+                      onClick={() => navigate(item.path)}
+                      className="cursor-pointer"
+                    >
+                      <Icon className="w-4 h-4 mr-2" aria-hidden="true" />
+                      <div className="flex flex-col">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Features Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-sm text-white/90 hover:text-white transition-colors duration-200 flex items-center gap-1">
+                  Features
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64">
+                {featuresMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem
+                      key={item.path}
+                      onClick={() => navigate(item.path)}
+                      className="cursor-pointer"
+                    >
+                      <Icon className="w-4 h-4 mr-2" aria-hidden="true" />
+                      <div className="flex flex-col">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -89,6 +209,52 @@ const Navbar = () => {
           className="md:hidden bg-background/95 backdrop-blur-xl"
         >
           <div className="container mx-auto px-4 py-4 space-y-4">
+            {/* Mobile Models Menu */}
+            <div>
+              <button className="block w-full text-left text-muted-foreground hover:text-foreground transition-colors font-medium mb-2">
+                Models
+              </button>
+              <div className="pl-4 space-y-2">
+                {modelsMenuItems.map((item) => (
+                  <a
+                    key={item.path}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      navigate(item.path);
+                    }}
+                    className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Features Menu */}
+            <div>
+              <button className="block w-full text-left text-muted-foreground hover:text-foreground transition-colors font-medium mb-2">
+                Features
+              </button>
+              <div className="pl-4 space-y-2">
+                {featuresMenuItems.map((item) => (
+                  <a
+                    key={item.path}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      navigate(item.path);
+                    }}
+                    className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+
             {navLinks.map((link) => (
               <a
                 key={link.name}

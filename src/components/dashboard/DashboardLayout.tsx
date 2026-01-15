@@ -86,11 +86,32 @@ const DashboardLayout = () => {
       {/* Sidebar - Icon Only with Tooltips */}
       <TooltipProvider>
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-16 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 w-16 transform transition-transform duration-300 lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex flex-col h-full">
+          {/* Purple Rainbow Gradient Border */}
+          <motion.div
+            className="absolute inset-0 rounded-r-2xl pointer-events-none"
+            style={{
+              padding: '1.5px',
+              background: 'linear-gradient(135deg, #7C3AED, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899)',
+              backgroundSize: '200% 200%',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+          
+          <div className="flex flex-col h-full bg-card border-r border-border rounded-r-2xl relative z-10">
             {/* Logo */}
             <div className="flex items-center justify-center py-5 border-b border-border relative">
               <Tooltip>
@@ -133,7 +154,12 @@ const DashboardLayout = () => {
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                        </motion.div>
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">
@@ -159,7 +185,12 @@ const DashboardLayout = () => {
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                        </motion.div>
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">
@@ -214,7 +245,12 @@ const DashboardLayout = () => {
                                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                                   }`}
                                 >
-                                  <Icon className="w-4 h-4" />
+                                  <motion.div
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                  >
+                                    <Icon className={`w-4 h-4 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                                  </motion.div>
                                 </Link>
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -265,7 +301,12 @@ const DashboardLayout = () => {
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                        </motion.div>
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">

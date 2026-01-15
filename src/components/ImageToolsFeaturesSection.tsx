@@ -1,184 +1,155 @@
 import { motion } from "framer-motion";
-import { Image, Wand2, Sparkles, Palette, Zap } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useRef } from "react";
 
-const imageFeatures = [
+const imageModels = [
   {
-    id: "image-generator",
-    title: "AI Image Generator",
-    views: "2.9M",
-    hot: true,
-    description: "Create stunning images from text prompts",
-    gradient: "from-blue-500 to-purple-500",
+    id: 1,
+    title: "Text2Image",
+    description: "Generate stunning images from text prompts using advanced AI models.",
+    image: "https://images.unsplash.com/photo-1604076913837-52ab5f6a3b5e?w=800&q=80",
   },
   {
-    id: "art-generator",
-    title: "AI Art Generator",
-    views: "1.5M",
-    hot: true,
-    description: "Generate artistic and creative visuals",
-    gradient: "from-violet-500 to-purple-500",
+    id: 2,
+    title: "Image2Image",
+    description: "Transform and modify existing images with AI-powered image-to-image conversion.",
+    image: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80",
   },
   {
-    id: "remove-bg",
-    title: "Remove BG",
-    views: "890K",
-    hot: false,
-    description: "Remove backgrounds instantly",
-    gradient: "from-green-500 to-emerald-500",
+    id: 3,
+    title: "Background Removal",
+    description: "Instantly remove backgrounds from images with precision and accuracy.",
+    image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80",
   },
   {
-    id: "object-remover",
-    title: "Object Remover",
-    views: "650K",
-    hot: false,
-    description: "Remove unwanted objects from images",
-    gradient: "from-orange-500 to-red-500",
+    id: 4,
+    title: "Avatar Generation",
+    description: "Create unique AI-generated avatars and profile pictures in various styles.",
+    image: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=80",
   },
   {
-    id: "image-enhancer",
-    title: "Image Enhancer",
-    views: "1.2M",
-    hot: true,
-    description: "Enhance image quality and resolution",
-    gradient: "from-cyan-500 to-blue-500",
+    id: 5,
+    title: "Upscale",
+    description: "Enhance image resolution and quality with AI-powered upscaling technology.",
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80",
   },
   {
-    id: "ghibli-generator",
-    title: "Ghibli AI Generator",
-    views: "780K",
-    hot: false,
-    description: "Create Studio Ghibli style artwork",
-    gradient: "from-teal-500 to-cyan-500",
+    id: 6,
+    title: "Watermark Removal",
+    description: "Remove watermarks and unwanted elements from images seamlessly.",
+    image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&q=80",
   },
   {
-    id: "anime-upscaler",
-    title: "Anime Upscaler",
-    views: "950K",
-    hot: true,
-    description: "Upscale anime images with AI",
-    gradient: "from-indigo-500 to-purple-500",
-  },
-  {
-    id: "chat-to-image",
-    title: "Chat to Image",
-    views: "1.1M",
-    hot: false,
-    description: "Generate images through conversation",
-    gradient: "from-yellow-500 to-orange-500",
-  },
-  {
-    id: "loras",
-    title: "LoRAs",
-    views: "720K",
-    hot: false,
-    description: "Custom style models and LoRAs",
-    gradient: "from-rose-500 to-pink-500",
+    id: 7,
+    title: "Content Creation",
+    description: "Create engaging visual content for social media, marketing, and more.",
+    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=80",
   },
 ];
 
 const ImageToolsFeaturesSection = () => {
-  const [activeTab, setActiveTab] = useState<"all" | "popular">("all");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const displayedFeatures = activeTab === "popular" 
-    ? imageFeatures.filter(f => f.hot)
-    : imageFeatures;
+  const visibleCards = 4;
+  const maxIndex = Math.max(0, imageModels.length - visibleCards);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  const displayedModels = imageModels.slice(currentIndex, currentIndex + visibleCards);
 
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden w-full">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background w-full" />
-
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        {/* Header */}
+        {/* Header with Navigation */}
+        <div className="flex items-center justify-between mb-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
-            Image Tools <span className="gradient-text">Features</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-2 tracking-tight">
+              Image Tool{" "}
+              <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Feature
+              </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Powerful AI image generation and editing tools
-          </p>
         </motion.div>
 
-        {/* Tabs */}
+          {/* Navigation Arrows */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex items-center justify-center gap-4 mb-12"
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3"
         >
           <button
-            onClick={() => setActiveTab("all")}
-            className={`px-6 py-3 rounded-xl font-medium transition-all ${
-              activeTab === "all"
-                ? "bg-primary text-primary-foreground shadow-lg"
-                : "bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className={`w-12 h-12 rounded-full border-2 border-white/30 bg-black/40 backdrop-blur-md flex items-center justify-center transition-all ${
+                currentIndex === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-white/10 hover:border-white/50 cursor-pointer"
             }`}
           >
-            All Tools
+              <ChevronLeft className="w-6 h-6 text-white" />
           </button>
           <button
-            onClick={() => setActiveTab("popular")}
-            className={`px-6 py-3 rounded-xl font-medium transition-all ${
-              activeTab === "popular"
-                ? "bg-primary text-primary-foreground shadow-lg"
-                : "bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+              onClick={handleNext}
+              disabled={currentIndex >= maxIndex}
+              className={`w-12 h-12 rounded-full border-2 border-white/30 bg-black/40 backdrop-blur-md flex items-center justify-center transition-all ${
+                currentIndex >= maxIndex
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-white/10 hover:border-white/50 cursor-pointer"
             }`}
           >
-            Popular
+              <ChevronRight className="w-6 h-6 text-white" />
           </button>
         </motion.div>
+        </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
-          {displayedFeatures.map((feature, index) => (
+        {/* Cards Grid */}
+        <div ref={scrollRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {displayedModels.map((model, index) => (
             <motion.div
-              key={feature.id}
+              key={model.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="group relative bg-card/50 backdrop-blur-xl border border-border/50 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer"
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group cursor-pointer"
             >
-              {/* Card Image/Icon Area */}
-              <div className={`relative h-48 bg-gradient-to-br ${feature.gradient} flex items-center justify-center overflow-hidden`}>
-                <div className="absolute inset-0 opacity-20" style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                }}></div>
-                <Image className="w-16 h-16 text-white/90 group-hover:scale-110 transition-transform relative z-10" />
-                
-                {/* Labels */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                  {feature.hot && (
-                    <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-semibold">
-                      Hot
-                    </span>
-                  )}
-                  <span className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-xs font-medium">
-                    {feature.views}
-                  </span>
+              {/* Card Container */}
+              <div className="relative bg-gradient-to-br from-[#0a0a0a]/90 to-[#1a1a1a]/90 backdrop-blur-md border-2 border-white/30 overflow-hidden shadow-xl">
+                {/* Image */}
+                <div className="relative w-full h-64 overflow-hidden">
+                  <img
+                    src={model.image}
+                    alt={model.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              </div>
+
+                {/* Content */}
+                <div className="p-6 bg-gradient-to-b from-[#0a0a0a]/95 to-[#1a1a1a]/95">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all">
+                    {model.title}
+                </h3>
+                  <p className="text-sm text-white/70 leading-relaxed">
+                    {model.description}
+                </p>
                 </div>
               </div>
-
-              {/* Card Content */}
-              <div className="p-4">
-                <h3 className="text-base font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {feature.description}
-                </p>
-              </div>
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </motion.div>
           ))}
         </div>
@@ -188,4 +159,3 @@ const ImageToolsFeaturesSection = () => {
 };
 
 export default ImageToolsFeaturesSection;
-

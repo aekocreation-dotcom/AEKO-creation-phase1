@@ -4,6 +4,7 @@ import CreateAgentSection from "@/components/CreateAgentSection";
 import AllModelsSection from "@/components/AllModelsSection";
 import ImageToolsFeaturesSection from "@/components/ImageToolsFeaturesSection";
 import VideoToolsFeaturesSection from "@/components/VideoToolsFeaturesSection";
+import ShowcaseSection from "@/components/ShowcaseSection";
 import PricingSection from "@/components/PricingSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
@@ -31,6 +32,7 @@ const Index = () => {
         <AllModelsSection />
         <ImageToolsFeaturesSection />
         <VideoToolsFeaturesSection />
+        <ShowcaseSection />
         <PricingSection />
         <CTASection />
         <Footer />

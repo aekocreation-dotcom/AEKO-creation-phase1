@@ -338,7 +338,8 @@ const AgentLLMPage = () => {
           opacity: isInputFocused ? 0 : 1,
           paddingTop: isInputFocused ? "0px" : "8px",
           paddingBottom: isInputFocused ? "0px" : "8px",
-          paddingX: isInputFocused ? "0px" : "16px",
+          paddingLeft: isInputFocused ? "0px" : "16px",
+          paddingRight: isInputFocused ? "0px" : "16px",
         }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >

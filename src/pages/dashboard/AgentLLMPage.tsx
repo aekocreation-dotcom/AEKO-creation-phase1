@@ -234,7 +234,13 @@ const AgentLLMPage = () => {
 
   return (
     <TooltipProvider>
-    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
+    <motion.div 
+      className="fixed inset-0 flex flex-col bg-background overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      style={{ minHeight: '100vh' }}
+    >
       {/* Background Image - Different for light/dark mode */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -819,7 +825,7 @@ const AgentLLMPage = () => {
         </div>
       </motion.div>
       </div>
-    </div>
+    </motion.div>
     </TooltipProvider>
   );
 };

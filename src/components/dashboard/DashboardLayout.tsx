@@ -117,11 +117,17 @@ const DashboardLayout = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to="/" className="flex items-center justify-center">
-                    <img 
-                      src={logoDark} 
-                      alt="AEKO" 
-                      className="w-10 h-10 object-contain" 
-                    />
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                      {/* Perfect round white border */}
+                      <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 transition-all duration-200" style={{ borderWidth: '3px' }} />
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+                        <img 
+                          src={logoDark} 
+                          alt="AEKO" 
+                          className="w-full h-full object-contain" 
+                        />
+                      </div>
+                    </div>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">

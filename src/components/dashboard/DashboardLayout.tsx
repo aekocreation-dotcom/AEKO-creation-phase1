@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,10 +18,6 @@ import {
   Sun,
   Moon,
   Store,
-  Library,
-  Settings,
-  Coins,
-  Star,
 } from "lucide-react";
 import logoDark from "@/assets/ChatGPT Image Dec 25, 2025, 03_45_44 PM.png";
 // import logoLight from "@/assets/ak-logo.png"; // Uncomment when you add the AK logo file
@@ -33,20 +28,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { authAPI } from "@/lib/api";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
 
 const navItems = [
-  { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/dashboard/feed", icon: Library, label: "Library" },
+  { path: "/dashboard", icon: Home, label: "Dashboard" },
+  { path: "/dashboard/feed", icon: Compass, label: "Feed" },
+  { path: "/dashboard/support", icon: HelpCircle, label: "Support" },
 ];
 
 const toolsSubItems = [
@@ -85,87 +74,33 @@ const DashboardLayout = () => {
     }
   }, [isToolsActive]);
 
-  // Scroll to top and ensure content visibility on route change
-  useEffect(() => {
-    // Scroll main content area to top
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      mainContent.scrollTop = 0;
-    }
-    // Force a small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
-
   const handleLogout = () => {
     // Clear auth state (localStorage) and redirect to landing page
     authAPI.logout();
     toast.success("You have been logged out");
-    // Force a full page reload to ensure clean state
-    window.location.href = "/";
+    navigate("/");
   };
 
-  const user = authAPI.getCurrentUser();
-  const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
-
   return (
-    <div className="h-screen bg-background flex w-full overflow-hidden">
-      {/* Sidebar - Redesigned with Labels */}
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden" style={{ maxWidth: '90vw', margin: '0 auto' }}>
+      {/* Sidebar - Icon Only with Tooltips */}
       <TooltipProvider>
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-16 backdrop-blur-xl transform transition-transform duration-300 lg:translate-x-0 rounded-r-2xl ${
+          className={`fixed inset-y-0 left-0 z-50 w-16 bg-card border-r border-border transform transition-transform duration-300 lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
-          style={{
-            borderRadius: '16px',
-          }}
         >
-          {/* Animated Gradient Border */}
-          <motion.div
-            className="absolute inset-0 rounded-r-2xl pointer-events-none"
-            style={{
-              padding: '1.5px',
-              background: 'linear-gradient(135deg, #7C3AED, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899)',
-              backgroundSize: '200% 200%',
-              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            }}
-            animate={{
-              backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-          {/* Background */}
-          <div
-            className="absolute inset-[1.5px] rounded-r-2xl bg-[#12162A] backdrop-blur-xl"
-            style={{
-              borderRadius: '14px',
-            }}
-          />
-          <div className="flex flex-col h-full relative z-10">
-            {/* Logo/Avatar */}
-            <div className="flex items-center justify-center py-5 border-b border-border/50 relative">
+          <div className="flex flex-col h-full">
+            {/* Logo */}
+            <div className="flex items-center justify-center py-5 border-b border-border relative">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/" className="flex items-center justify-center group">
-                    <div className="relative w-12 h-12 flex items-center justify-center">
-                      {/* Perfect round white border */}
-                      <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 group-hover:shadow-white/40 transition-all duration-200" style={{ borderWidth: '3px' }} />
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
-                        <img 
-                          src={logoDark} 
-                          alt="AEKO" 
-                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200" 
-                        />
-                      </div>
-                    </div>
+                  <Link to="/" className="flex items-center justify-center">
+                    <img 
+                      src={logoDark} 
+                      alt="AEKO" 
+                      className="w-10 h-10 object-contain" 
+                    />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -181,44 +116,24 @@ const DashboardLayout = () => {
             </div>
 
             {/* Navigation - Icon Only with Tooltips */}
-            <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-              {navItems.map((item) => {
+            <nav className="flex-1 px-2 py-6 space-y-1 overflow-y-auto">
+              {/* 1. Dashboard */}
+              {navItems.filter(item => item.path === "/dashboard").map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path || 
-                  (item.path === "/dashboard" && location.pathname === "/dashboard");
+                const isActive = location.pathname === item.path;
                 return (
                   <Tooltip key={item.path}>
                     <TooltipTrigger asChild>
                       <Link
                         to={item.path}
                         onClick={() => setSidebarOpen(false)}
-                        className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
+                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
                           isActive
-                            ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
+                            ? "gradient-active-nav text-foreground"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         }`}
                       >
-                        {/* Glow effect for active items */}
-                        {isActive && (
-                          <motion.div
-                            className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
-                            animate={{
-                              opacity: [0.5, 0.8, 0.5],
-                              scale: [1, 1.1, 1],
-                            }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            }}
-                          />
-                        )}
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-lg' : ''}`} />
-                        </motion.div>
+                        <Icon className="w-5 h-5" />
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">
@@ -228,55 +143,45 @@ const DashboardLayout = () => {
                 );
               })}
 
-              {/* AI Tools with Dropdown */}
+              {/* 2. Feed */}
+              {navItems.filter(item => item.path === "/dashboard/feed").map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Tooltip key={item.path}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={item.path}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                          isActive
+                            ? "gradient-active-nav text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+
+              {/* 3. AI Tools with Dropdown */}
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-                      className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
+                      className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
                         isToolsActive
-                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
+                          ? "bg-pink-500/20 text-foreground"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                       }`}
                     >
-                      {/* Glow effect for active items */}
-                      {isToolsActive && (
-                        <motion.div
-                          className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
-                          animate={{
-                            opacity: [0.5, 0.8, 0.5],
-                            scale: [1, 1.1, 1],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        />
-                      )}
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="relative"
-                      >
-                        <MessageSquare className={`w-5 h-5 ${isToolsActive ? 'drop-shadow-lg' : ''}`} />
-                        {/* Star Icon Badge */}
-                        <motion.div
-                          className="absolute -top-1 -right-1"
-                          animate={{
-                            scale: [1, 1.2, 1],
-                            rotate: [0, 10, -10, 0],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        >
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-md" />
-                        </motion.div>
-                      </motion.div>
+                      <Wrench className="w-5 h-5" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="right">
@@ -303,33 +208,13 @@ const DashboardLayout = () => {
                                   onClick={() => {
                                     setSidebarOpen(false);
                                   }}
-                                  className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
+                                  className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
                                     isActive
-                                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
+                                      ? "gradient-active-nav text-foreground"
                                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                                   }`}
                                 >
-                                  {/* Glow effect for active items */}
-                                  {isActive && (
-                                    <motion.div
-                                      className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
-                                      animate={{
-                                        opacity: [0.5, 0.8, 0.5],
-                                        scale: [1, 1.1, 1],
-                                      }}
-                                      transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                      }}
-                                    />
-                                  )}
-                                  <motion.div
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                  >
-                                    <Icon className={`w-4 h-4 ${isActive ? 'drop-shadow-lg' : ''}`} />
-                                  </motion.div>
+                                  <Icon className="w-4 h-4" />
                                 </Link>
                               </TooltipTrigger>
                               <TooltipContent side="right">
@@ -344,39 +229,19 @@ const DashboardLayout = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Agent Store */}
+              {/* 4. Agent Store */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
                     to="/dashboard/agent-store"
                     onClick={() => setSidebarOpen(false)}
-                    className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
+                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
                       location.pathname === "/dashboard/agent-store"
-                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
+                        ? "bg-pink-500/20 text-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                     }`}
                   >
-                    {/* Glow effect for active items */}
-                    {location.pathname === "/dashboard/agent-store" && (
-                      <motion.div
-                        className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
-                        animate={{
-                          opacity: [0.5, 0.8, 0.5],
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    )}
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Store className={`w-5 h-5 ${location.pathname === "/dashboard/agent-store" ? 'drop-shadow-lg' : ''}`} />
-                    </motion.div>
+                    <Store className="w-5 h-5" />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -384,206 +249,109 @@ const DashboardLayout = () => {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Divider */}
-              <div className="h-px bg-border/50 my-2" />
-
-              {/* Settings */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    to="/dashboard/account"
-                    onClick={() => setSidebarOpen(false)}
-                    className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all group ${
-                      location.pathname === "/dashboard/account"
-                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-foreground ring-2 ring-purple-500/30 shadow-lg shadow-purple-500/20"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                    }`}
-                  >
-                    {/* Glow effect for active items */}
-                    {location.pathname === "/dashboard/account" && (
-                      <motion.div
-                        className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-sm -z-10"
-                        animate={{
-                          opacity: [0.5, 0.8, 0.5],
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    )}
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Settings className={`w-5 h-5 ${location.pathname === "/dashboard/account" ? 'drop-shadow-lg' : ''}`} />
-                    </motion.div>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Settings</p>
-                </TooltipContent>
-              </Tooltip>
+              {/* 5. Support */}
+              {navItems.filter(item => item.path === "/dashboard/support").map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Tooltip key={item.path}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={item.path}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                          isActive
+                            ? "gradient-active-nav text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
             </nav>
 
-            {/* Bottom Section */}
+            {/* Bottom Actions */}
             <div className="px-2 pb-2 space-y-1 border-t border-border/50 pt-2 mt-auto">
-              {/* Currency Display */}
+              {/* Theme Toggle */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer group"
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+                    title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                   >
-                    <div className="relative">
-                      {/* Animated gradient coins */}
-                      <motion.div
-                        className="absolute -top-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-card"
-                        animate={{
-                          rotate: [0, 360],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      />
-                      <motion.div
-                        className="absolute top-0 left-0 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 border-2 border-card"
-                        animate={{
-                          rotate: [360, 0],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      />
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <Coins className="w-4 h-4 text-foreground relative z-10 drop-shadow-md group-hover:text-primary transition-colors" />
-                      </motion.div>
-                    </div>
-                  </motion.div>
+                    {theme === "dark" ? (
+                      <Sun className="w-5 h-5" />
+                    ) : (
+                      <Moon className="w-5 h-5" />
+                    )}
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p>142 Credits</p>
+                  <p>{theme === "dark" ? "Light Mode" : "Dark Mode"}</p>
                 </TooltipContent>
               </Tooltip>
 
               {/* Upgrade Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                  <Link
+                    to="/dashboard/account"
+                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
                   >
-                    <Link
-                      to="/dashboard/account"
-                      onClick={() => setSidebarOpen(false)}
-                      className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white transition-all shadow-lg hover:shadow-xl overflow-hidden group"
-                    >
-                      {/* Animated gradient overlay */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                        animate={{
-                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: 'linear',
-                        }}
-                        style={{
-                          backgroundSize: '200% 100%',
-                        }}
-                      />
-                      <CreditCard className="w-5 h-5 relative z-10 drop-shadow-lg" />
-                    </Link>
-                  </motion.div>
+                    <CreditCard className="w-5 h-5" />
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">
                   <p>Upgrade</p>
                 </TooltipContent>
               </Tooltip>
 
-              {/* User Profile Dropdown */}
-              <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="relative flex items-center justify-center w-10 h-10 rounded-xl hover:bg-secondary/30 transition-all group"
-                      >
-                        {/* Glow effect on hover */}
-                        <motion.div
-                          className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 blur-md opacity-0 group-hover:opacity-100 transition-opacity"
-                          animate={{
-                            opacity: [0, 0.5, 0],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                        />
-                        <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-xs shadow-lg ring-2 ring-purple-500/30">
-                          {userInitial}
-                        </div>
-                      </motion.button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>Account</p>
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard/account" className="cursor-pointer">
-                      <User className="w-4 h-4 mr-2" />
-                      Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
-                    {theme === "dark" ? (
-                      <>
-                        <Sun className="w-4 h-4 mr-2" />
-                        Light Mode
-                      </>
-                    ) : (
-                      <>
-                        <Moon className="w-4 h-4 mr-2" />
-                        Dark Mode
-                      </>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Account Icon */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/dashboard/account"
+                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-medium text-sm">
+                      A
+                    </div>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Account</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Logout */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex items-center justify-center w-10 h-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </aside>
       </TooltipProvider>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-16 overflow-x-hidden flex flex-col h-screen">
+      <div className="flex-1 lg:ml-16 overflow-x-hidden">
         {/* Mobile Menu Button - Floating */}
         <button
           onClick={() => setSidebarOpen(true)}
@@ -593,7 +361,7 @@ const DashboardLayout = () => {
         </button>
 
         {/* Page Content */}
-        <main className="p-1 lg:p-2 flex-1 flex flex-col relative overflow-hidden" key={location.pathname}>
+        <main className="p-1 lg:p-2">
           <Outlet />
         </main>
       </div>

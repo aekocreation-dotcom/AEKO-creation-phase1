@@ -332,17 +332,17 @@ const FeedPage = () => {
         </div>
       </header>
 
-      {/* Masonry Grid - With Borders and Better Spacing */}
+      {/* Masonry Grid - Full Width Like Midjourney */}
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.05, duration: 0.3 }}
-        className="pt-4 px-2 sm:px-4 lg:px-6"
+        className="pt-2 px-0.5 sm:px-1"
       >
-        <div className="w-full max-w-[1920px] mx-auto">
+        <div className="w-full">
           <div
             className="
-              gap-3 sm:gap-4 grid
+              gap-2 grid
               grid-cols-2
               sm:grid-cols-3
               md:grid-cols-4
@@ -351,13 +351,10 @@ const FeedPage = () => {
               2xl:grid-cols-7
               "
           >
-            {sortedItems.map((item, index) => (
-              <motion.div
+            {sortedItems.map((item) => (
+              <div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.02, duration: 0.3 }}
-                className="flex flex-col min-w-0 break-inside-avoid"
+                className="mb-2 flex flex-col min-w-0 break-inside-avoid"
               >
                 <MasonryCard
                   item={item}
@@ -368,7 +365,7 @@ const FeedPage = () => {
                   onOpenReels={handleOpenReels}
                   onClick={handleOpenDetail}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

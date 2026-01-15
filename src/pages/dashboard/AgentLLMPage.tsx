@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Send,
+  Paperclip,
   RefreshCw,
   MessageSquare,
   Copy,
@@ -10,27 +11,38 @@ import {
   ThumbsUp,
   ThumbsDown,
   MoreHorizontal,
+  Lightbulb,
   X,
+  Rocket,
+  ChevronDown,
+  Plus,
+  Bot,
   Loader2,
+  Upload,
   Image as ImageIcon,
-  Video,
-  Layout,
-  Infinity,
-  Maximize2,
-  Square,
-  PenTool,
-  Mountain,
+  FileText,
+  Search,
   Sparkles,
 } from "lucide-react";
 import { llmAPI } from "@/lib/api";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/hooks/use-theme";
 
 interface ChatMessage {
   id: string;
@@ -40,53 +52,83 @@ interface ChatMessage {
   responseTime?: string;
 }
 
-const creativeTools = [
-  { id: "image", label: "Image", icon: ImageIcon, color: "from-purple-500 to-pink-500" },
-  { id: "video", label: "Video", icon: Video, color: "from-blue-500 to-cyan-500" },
-  { id: "blueprints", label: "Blueprints", icon: Layout, color: "from-green-500 to-emerald-500", isNew: true },
-  { id: "flow-state", label: "Flow State", icon: Infinity, color: "from-orange-500 to-red-500" },
-  { id: "upscaler", label: "Upscaler", icon: Maximize2, color: "from-pink-500 to-rose-500" },
-  { id: "canvas", label: "Canvas", icon: Square, color: "from-indigo-500 to-purple-500" },
-  { id: "draw", label: "Draw", icon: PenTool, color: "from-yellow-500 to-orange-500" },
-];
-
 const AgentLLMPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [showThinkHarder, setShowThinkHarder] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<"gpt-3.5" | "gpt-4.1" | "claude">("gpt-3.5");
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [agentDescription, setAgentDescription] = useState("");
+  const [isAgentMenuOpen, setIsAgentMenuOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { theme } = useTheme();
 
-  // Background images array - looping through different images
-  const backgroundImages = [
-    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80', // Waterfalls with turquoise pool - cascading waterfalls into crystal clear turquoise water
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80', // Tropical seascape with longtail boat at sunset - tropical waters with limestone cliffs
-    'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80', // Japanese-style landscape with red sky and moon - dramatic sunset landscape
-    'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&q=80', // African savanna sunset scene - acacia trees at sunset
-  ];
-
-  // Preload background images
   useEffect(() => {
-    backgroundImages.forEach((imageUrl) => {
-      const img = new Image();
-      img.src = imageUrl;
-    });
-  }, []);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  // Loop through background images every 10 seconds
+  const handleSendQuery = async (queryText: string) => {
+    if (!queryText.trim() || isLoading) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: queryText.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      const startTime = Date.now();
+      const response = await llmAPI.chat(queryText.trim());
+      const responseTime = ((Date.now() - startTime) / 1000).toFixed(1);
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: response.message || response.response || "I'm sorry, I couldn't generate a response.",
+        timestamp: new Date(),
+        responseTime: `${responseTime}s`,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error: any) {
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: error?.message || "Error: Failed to fetch response. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle query parameter from home page
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBgIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % backgroundImages.length;
-        return nextIndex;
-      });
-    }, 10000); // Change image every 10 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+    const query = searchParams.get("q");
+    if (query) {
+      setInput(query);
+      // Clear the query parameter
+      setSearchParams({});
+      // Auto-send the message after a short delay
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+        handleSendQuery(query);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -103,13 +145,12 @@ const AgentLLMPage = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const queryText = input.trim();
     setInput("");
     setIsLoading(true);
     const startTime = Date.now();
 
     try {
-      const response = await llmAPI.chat(queryText, {
+      const response = await llmAPI.chat(input.trim(), {
         max_tokens: 2000,
         temperature: 0.7,
       });
@@ -178,9 +219,10 @@ const AgentLLMPage = () => {
     }
   };
 
+  // Auto-resize textarea
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = "48px";
       inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
     }
   }, [input]);
@@ -190,441 +232,550 @@ const AgentLLMPage = () => {
     toast.success("Copied to clipboard!");
   };
 
-  // Handle query parameter from home page
-  useEffect(() => {
-    const query = searchParams.get("q");
-    if (query) {
-      setInput(query);
-      setSearchParams({});
-      const timer = setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-        handleSend();
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
   return (
     <TooltipProvider>
-      <div className="absolute inset-0 flex flex-col bg-background overflow-hidden">
-        {/* Looping Background Images - Always visible with fallback */}
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-          {/* Fallback background color */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#1a0b2e] to-[#0f0517]" />
-          
-          {backgroundImages.map((imageUrl, index) => (
+    <div className="fixed inset-0 flex flex-col bg-background overflow-hidden">
+      {/* Background Image - Different for light/dark mode */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: theme === "light" 
+            ? `url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80')` // Night landscape with stars, lake, and Milky Way
+            : `url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80')`, // Mountain/Moon landscape for dark mode
+          opacity: theme === "light" ? 0.05 : 0.04,
+          filter: 'blur(0.5px)',
+        }}
+      />
+      
+      {/* Animated Background Overlay */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Gradient Orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }} />
+        
+        {/* Animated Grid Pattern */}
+        <motion.div 
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+          }}
+          animate={{
+            backgroundPosition: ['0px 0px', '50px 50px'],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
+        
+        {/* Floating Particles */}
+        {[...Array(15)].map((_, i) => {
+          const size = Math.random() * 3 + 1;
+          const startX = Math.random() * 100;
+          const startY = Math.random() * 100;
+          return (
             <motion.div
-              key={`bg-${index}-${imageUrl}`}
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              initial={{ opacity: index === 0 ? 0.7 : 0 }}
+              key={i}
+              className="absolute rounded-full bg-primary/10"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                left: `${startX}%`,
+                top: `${startY}%`,
+              }}
               animate={{
-                opacity: currentBgIndex === index ? 0.7 : 0,
-                scale: currentBgIndex === index ? 1.02 : 1,
+                y: [0, -30, -60, -30, 0],
+                x: [0, Math.random() * 20 - 10, Math.random() * 20 - 10, Math.random() * 20 - 10, 0],
+                opacity: [0.2, 0.5, 0.3, 0.5, 0.2],
+                scale: [1, 1.2, 1, 1.2, 1],
               }}
               transition={{
-                duration: 2.5,
+                duration: Math.random() * 4 + 6,
+                repeat: Infinity,
+                delay: Math.random() * 2,
                 ease: "easeInOut",
               }}
-              style={{
-                backgroundImage: `url('${imageUrl}')`,
-                filter: 'blur(0px)',
-                zIndex: currentBgIndex === index ? 1 : 0,
-                willChange: 'opacity',
-              }}
-              onError={(e) => {
-                console.error(`Failed to load background image ${index}:`, imageUrl);
-              }}
             />
-          ))}
+          );
+        })}
+        
+        {/* Animated Waves */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-32 opacity-5"
+          style={{
+            background: 'linear-gradient(180deg, transparent, hsl(var(--primary) / 0.3))',
+          }}
+          animate={{
+            height: ['32px', '48px', '32px'],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+      
+      {/* Content with relative positioning - Full Screen */}
+      <div className="relative z-10 flex flex-col" style={{ height: '100vh', maxHeight: '100vh', overflow: 'hidden', width: '100%' }}>
+      {/* Header - Collapsible when input focused */}
+      <motion.div 
+        className="relative z-10 bg-background/80 backdrop-blur-sm flex-shrink-0"
+        animate={{
+          height: isInputFocused ? "0px" : "auto",
+          opacity: isInputFocused ? 0 : 1,
+          paddingTop: isInputFocused ? "0px" : "8px",
+          paddingBottom: isInputFocused ? "0px" : "8px",
+          paddingX: isInputFocused ? "0px" : "16px",
+        }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
+        <div className="flex items-center justify-end">
+          {/* Header content can be added here if needed */}
         </div>
-        
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-background/10 pointer-events-none" style={{ zIndex: 2 }} />
-        
-        {/* Content */}
-        <div className="relative flex flex-col flex-1 w-full overflow-y-auto" style={{ zIndex: 10 }}>
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 w-full">
-            {messages.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-4xl space-y-8"
-              >
-                {/* Title */}
+      </motion.div>
+
+      {/* Messages Area - Expanded when input focused - Centered Layout */}
+      <motion.div 
+        className="flex-1 overflow-y-auto overflow-x-hidden relative z-10"
+        style={{ 
+          flex: '1 1 auto',
+          minHeight: 0,
+          width: '100%',
+          maxWidth: '100%',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+        animate={{
+          paddingTop: isInputFocused ? "8px" : "16px",
+          paddingBottom: isInputFocused ? "0px" : "0px",
+        }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
+        <div className={`w-full ${isInputFocused ? "space-y-4" : "space-y-6"}`} style={{ maxWidth: '768px', margin: '0 auto', paddingLeft: isInputFocused ? "16px" : "clamp(16px, 4vw, 24px)", paddingRight: isInputFocused ? "16px" : "clamp(16px, 4vw, 24px)", overflowX: 'hidden' }}>
+          {messages.length === 0 ? (
+            <motion.div 
+              className="flex items-center justify-center h-full"
+              animate={{
+                scale: isInputFocused ? 0.95 : 1,
+                opacity: isInputFocused ? 0.7 : 1,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="text-center space-y-6 w-full px-4 max-w-2xl mx-auto">
                 <motion.h1
-                  initial={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground text-center"
+                  transition={{ duration: 0.5 }}
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
                 >
-                  Let's Create
+                  What do you want to create?
                 </motion.h1>
-
-                {/* Prompt Input Area */}
-                <motion.div
-                  initial={{ opacity: 1, y: 0 }}
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="relative"
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="text-lg md:text-xl text-muted-foreground"
                 >
-                  <div className="relative flex-1 w-full" style={{ borderRadius: '16px' }}>
-                    {/* Rich Rainbow Animated Gradient Border */}
-                    <motion.div
-                      className="absolute inset-0 rounded-2xl pointer-events-none"
-                      style={{
-                        padding: '2px',
-                        background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899, #F472B6, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899, #7C3AED)',
-                        backgroundSize: '300% 300%',
-                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                        WebkitMaskComposite: 'xor',
-                        maskComposite: 'exclude',
-                      }}
-                      animate={{
-                        backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-                      }}
-                      transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: 'linear',
-                      }}
-                    />
-                    
-                    {/* Outer Glow Effect - Rainbow */}
-                    <motion.div
-                      className="absolute -inset-1 rounded-2xl"
-                      animate={{
-                        opacity: [0.5, 0.8, 0.5],
-                        scale: [1, 1.02, 1],
-                      }}
-                      transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(236, 72, 153, 0.4), rgba(59, 130, 246, 0.4), rgba(34, 211, 238, 0.4), rgba(34, 197, 94, 0.4), rgba(250, 204, 21, 0.4))',
-                        filter: 'blur(10px)',
-                      }}
-                    />
-                    
-                    {/* Inner Background */}
-                    <div className="relative flex items-center bg-[#1a1f3a]/90 backdrop-blur-md rounded-2xl shadow-xl min-h-[56px]" style={{ borderRadius: '14px' }}>
-                      {/* Inner Glow on Focus */}
-                      {input && (
-                        <motion.div
-                          className="absolute inset-0 rounded-2xl"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          style={{
-                            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
-                            boxShadow: 'inset 0 0 25px rgba(139, 92, 246, 0.3)',
-                          }}
-                        />
-                      )}
-                      
-                      {/* Mountain Icon */}
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-shrink-0">
-                        <Mountain className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                      
-                      {/* Textarea */}
-                      <textarea
-                        ref={inputRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Type a prompt..."
-                        rows={1}
-                        className="w-full pl-12 pr-14 py-4 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none transition-all relative z-10 overflow-y-auto"
-                        style={{ 
-                          minHeight: "56px",
-                          maxHeight: "120px",
-                        }}
-                      />
-                      
-                      {/* Send Button - Properly Aligned */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex-shrink-0">
-                        <motion.button
-                          onClick={handleSend}
-                          disabled={!input.trim() || isLoading}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                        >
-                          {isLoading ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                          ) : (
-                            <Send className="w-5 h-5" />
-                          )}
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Creative Tools */}
+                  Type your prompt - turn ideas into stunning AI visuals instantly.
+                </motion.p>
                 <motion.div
-                  initial={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center justify-center gap-6 flex-wrap"
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="flex flex-wrap items-center justify-center gap-3 mt-8"
                 >
-                  {creativeTools.map((tool) => (
-                    <Tooltip key={tool.id}>
-                      <TooltipTrigger asChild>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setActiveTool(tool.id);
-                            toast.info(`${tool.label} tool selected`);
-                          }}
-                          className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all cursor-pointer group ${
-                            activeTool === tool.id ? "border-primary shadow-lg shadow-primary/20" : ""
-                          }`}
-                        >
-                          {tool.isNew && (
-                            <span className="absolute -top-2 -right-2 px-2 py-0.5 text-xs font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full">
-                              NEW
-                            </span>
-                          )}
-                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all`}>
-                            <tool.icon className="w-6 h-6 text-white" />
-                          </div>
-                          <span className="text-sm font-medium text-foreground">{tool.label}</span>
-                        </motion.button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{tool.label}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                  {[
+                    "Create a futuristic cityscape",
+                    "Design a logo for my brand",
+                    "Generate a product mockup",
+                    "Write a blog post about AI",
+                  ].map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setInput(suggestion);
+                        inputRef.current?.focus();
+                      }}
+                      className="px-4 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-primary/50 text-sm text-foreground transition-all duration-200 hover:scale-105"
+                    >
+                      {suggestion}
+                    </button>
                   ))}
                 </motion.div>
-              </motion.div>
-            ) : (
-              <div className="w-full max-w-4xl space-y-6 py-8">
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex gap-3 items-start ${
-                      message.role === "user" ? "justify-end flex-row-reverse" : "justify-start"
-                    }`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                        <MessageSquare className="w-4 h-4 text-primary" />
-                      </div>
-                    )}
-
-                    <div
-                      className={`rounded-2xl px-5 py-4 shadow-sm max-w-[80%] ${
-                        message.role === "user"
-                          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                          : "bg-card border border-border/50 text-foreground"
-                      }`}
-                    >
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words m-0">
-                          {message.content}
-                        </p>
-                      </div>
-                      {message.role === "assistant" && (
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleSend()}
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="Regenerate"
-                            >
-                              <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                            <button
-                              onClick={() => copyToClipboard(message.content)}
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="Copy"
-                            >
-                              <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                            <button
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="Share"
-                            >
-                              <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                            <button
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="Like"
-                            >
-                              <ThumbsUp className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                            <button
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="Dislike"
-                            >
-                              <ThumbsDown className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                            <button
-                              className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
-                              title="More"
-                            >
-                              <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
-                            </button>
-                          </div>
-                          {message.responseTime && (
-                            <span className="text-xs text-muted-foreground/70 font-medium">
-                              {message.responseTime}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {message.role === "user" && (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-xs font-semibold text-primary">U</span>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-
-                {isLoading && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-4 justify-start"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                      <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                    <div className="bg-card border border-border rounded-2xl px-4 py-3">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
-            )}
-          </div>
-
-          {/* Input Area - Shown when messages exist */}
-          {messages.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="relative z-10 bg-background/95 backdrop-blur-xl border-t border-border/50 p-4"
-            >
-              <div className="max-w-4xl mx-auto">
-                <div className="relative flex-1 w-full" style={{ borderRadius: '16px' }}>
-                  {/* Rich Rainbow Animated Gradient Border */}
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl pointer-events-none"
-                    style={{
-                      padding: '2px',
-                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899, #F472B6, #3B82F6, #22D3EE, #22C55E, #FACC15, #EC4899, #7C3AED)',
-                      backgroundSize: '300% 300%',
-                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                      WebkitMaskComposite: 'xor',
-                      maskComposite: 'exclude',
-                    }}
-                    animate={{
-                      backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  />
-                  
-                  {/* Outer Glow Effect - Rainbow */}
-                  <motion.div
-                    className="absolute -inset-1 rounded-2xl"
-                    animate={{
-                      opacity: [0.5, 0.8, 0.5],
-                      scale: [1, 1.02, 1],
-                    }}
-                    transition={{
-                      duration: 2.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(236, 72, 153, 0.4), rgba(59, 130, 246, 0.4), rgba(34, 211, 238, 0.4), rgba(34, 197, 94, 0.4), rgba(250, 204, 21, 0.4))',
-                      filter: 'blur(10px)',
-                    }}
-                  />
-                  
-                  {/* Inner Background */}
-                  <div className="relative flex items-center bg-[#1a1f3a]/90 backdrop-blur-md rounded-2xl shadow-xl min-h-[48px]" style={{ borderRadius: '14px' }}>
-                    {/* Inner Glow on Focus */}
-                    {input && (
-                      <motion.div
-                        className="absolute inset-0 rounded-2xl"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
-                          boxShadow: 'inset 0 0 25px rgba(139, 92, 246, 0.3)',
-                        }}
-                      />
-                    )}
-                    
-                    {/* Mountain Icon */}
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-shrink-0">
-                      <Mountain className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    
-                    {/* Textarea */}
-                    <textarea
-                      ref={inputRef}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type a prompt..."
-                      rows={1}
-                      className="w-full pl-12 pr-14 py-3 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none transition-all relative z-10 overflow-y-auto"
-                      style={{ 
-                        minHeight: "48px",
-                        maxHeight: "120px",
-                      }}
-                    />
-                    
-                    {/* Send Button - Properly Aligned */}
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex-shrink-0">
-                      <motion.button
-                        onClick={handleSend}
-                        disabled={!input.trim() || isLoading}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                      >
-                        {isLoading ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <Send className="w-5 h-5" />
-                        )}
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </motion.div>
+          ) : (
+            messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex gap-3 items-start w-full ${message.role === "user" ? "justify-end flex-row-reverse" : "justify-start"}`}
+              style={{ maxWidth: '100%', overflowX: 'hidden' }}
+            >
+              {message.role === "assistant" && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0 mt-1">
+                  <MessageSquare className="w-4 h-4 text-primary" />
+                </div>
+              )}
+
+              <div
+                className={`rounded-2xl px-5 py-4 shadow-sm ${
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card border border-border/50 text-foreground"
+                }`}
+                style={{ 
+                  maxWidth: message.role === "user" ? "min(75%, 100%)" : "min(80%, 100%)", 
+                  width: 'fit-content',
+                  minWidth: 0,
+                  wordWrap: "break-word", 
+                  overflowWrap: "break-word",
+                  overflowX: "hidden"
+                }}
+              >
+                <div className="prose prose-sm dark:prose-invert max-w-none" style={{ maxWidth: '100%', overflowWrap: 'break-word' }}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words m-0" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{message.content}</p>
+                </div>
+                {message.role === "assistant" && (
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleSend()}
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="Regenerate"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(message.content)}
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="Copy"
+                      >
+                        <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="Share"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="Like"
+                      >
+                        <ThumbsUp className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="Dislike"
+                      >
+                        <ThumbsDown className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                      <button
+                        className="p-1.5 hover:bg-secondary/50 rounded-md transition-colors"
+                        title="More"
+                      >
+                        <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                    </div>
+                    {message.responseTime && (
+                      <span className="text-xs text-muted-foreground/70 font-medium">
+                        {message.responseTime}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {message.role === "user" && (
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-xs font-semibold text-primary">U</span>
+                </div>
+              )}
+            </motion.div>
+            ))
           )}
+
+          {isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex gap-4 justify-start"
+          >
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+              <MessageSquare className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div className="bg-card border border-border rounded-2xl px-4 py-3">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+          <div ref={messagesEndRef} />
         </div>
+      </motion.div>
+
+      {/* Think Harder Banner */}
+      {showThinkHarder && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="mx-6 mb-2"
+        >
+          <div className="bg-secondary rounded-full px-4 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Think Harder</span>
+            </div>
+            <button
+              onClick={() => setShowThinkHarder(false)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Input Area - Professional Design - Centered at Bottom */}
+      <motion.div 
+        className="relative z-10 bg-background/95 backdrop-blur-xl flex-shrink-0"
+        style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', display: 'flex', justifyContent: 'center' }}
+        animate={{
+          paddingTop: isInputFocused ? "10px" : "14px",
+          paddingBottom: isInputFocused ? "10px" : "16px",
+        }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
+        <div className="w-full" style={{ maxWidth: '768px', margin: '0 auto', paddingLeft: 'clamp(16px, 4vw, 24px)', paddingRight: 'clamp(16px, 4vw, 24px)', boxSizing: 'border-box' }}>
+          <div className="relative w-full" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+            <div 
+              className="flex items-end gap-2 bg-card border border-border rounded-2xl shadow-lg hover:shadow-xl transition-all focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20"
+              style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={(e) => {
+                // Only blur if focus is not moving to another element in the input area
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                  setIsInputFocused(false);
+                }
+              }}
+            >
+              {/* Plus Icon with Agent Options Dropdown - Left Side */}
+              <DropdownMenu open={isAgentMenuOpen} onOpenChange={setIsAgentMenuOpen}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="p-2.5 hover:bg-secondary/50 rounded-lg transition-colors ml-1 flex-shrink-0 border border-border/50 hover:border-primary/50"
+                    title="Agent options"
+                    type="button"
+                    style={{ minWidth: '40px', minHeight: '40px' }}
+                  >
+                    <Plus className="w-5 h-5 text-foreground" strokeWidth={2} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" side="bottom" className="w-80 p-0 mt-2 z-50">
+                  <div className="p-4 space-y-4">
+                    {/* Web Search Toggle at Top */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Search className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-foreground">Web Search</span>
+                      </div>
+                      <Switch
+                        checked={webSearchEnabled}
+                        onCheckedChange={setWebSearchEnabled}
+                      />
+                    </div>
+                    
+                    <div className="border-t border-border/50" />
+                    
+                    {/* Describe Agent Behaviors */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">Describe your agent behaviors</span>
+                      </div>
+                      <textarea
+                        value={agentDescription}
+                        onChange={(e) => setAgentDescription(e.target.value)}
+                        placeholder="E.g., You are a helpful assistant that provides clear, concise answers..."
+                        rows={4}
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-secondary/30 border border-border/50 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                        onClick={(e) => e.stopPropagation()}
+                        onFocus={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                    
+                    <div className="border-t border-border/50" />
+                    
+                    {/* Upload Options */}
+                    <div className="space-y-2">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          toast.info("File upload coming soon!");
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        <span>Upload File</span>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuItem
+                        onClick={() => {
+                          toast.info("Image upload coming soon!");
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        <span>Upload Image</span>
+                      </DropdownMenuItem>
+                    </div>
+                    
+                    <div className="border-t border-border/50" />
+                    
+                    {/* Model Selection Dropdown */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Select Model</label>
+                      <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                          <button 
+                            className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg bg-secondary/30 border border-border/50 text-foreground hover:bg-secondary/50 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>{selectedModel === "gpt-3.5" ? "GPT-3.5" : selectedModel === "gpt-4.1" ? "GPT-4.1" : "Claude"}</span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56" onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedModel("gpt-3.5");
+                            }}
+                            className="cursor-pointer"
+                          >
+                            GPT-3.5
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedModel("gpt-4.1");
+                            }}
+                            className="cursor-pointer"
+                          >
+                            GPT-4.1
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedModel("claude");
+                            }}
+                            className="cursor-pointer"
+                          >
+                            Claude
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    
+                    {/* Done Button */}
+                    <div className="pt-2 border-t border-border/50">
+                      <button
+                        onClick={() => {
+                          setIsAgentMenuOpen(false);
+                          toast.success("Agent settings saved!");
+                        }}
+                        className="w-full px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors font-medium text-sm"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <button 
+                className="p-2.5 hover:bg-secondary/50 rounded-lg transition-colors flex-shrink-0"
+                title="Attach file"
+              >
+                <Paperclip className="w-4 h-4 text-muted-foreground" />
+              </button>
+              <div className="flex-1 relative min-w-0" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => {
+                    // Delay to allow button clicks
+                    setTimeout(() => {
+                      if (document.activeElement !== inputRef.current) {
+                        setIsInputFocused(false);
+                      }
+                    }, 200);
+                  }}
+                  placeholder="Message AEKO..."
+                  rows={1}
+                  className="w-full px-2 py-3 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none resize-none overflow-hidden text-sm leading-relaxed"
+                  style={{ minHeight: "52px", maxHeight: "200px", width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div className="flex items-center gap-1 pr-2 flex-shrink-0">
+                <button 
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
+                  title="Response mode"
+                >
+                  <Rocket className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Auto</span>
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                
+                <button
+                  onClick={handleSend}
+                  disabled={!input.trim() || isLoading}
+                  className="p-2.5 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:opacity-50 disabled:cursor-not-allowed text-primary-foreground rounded-lg transition-all shadow-sm hover:shadow-md disabled:shadow-none"
+                  title="Send message"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <motion.div 
+              className="flex items-center justify-center text-xs text-muted-foreground/60"
+              animate={{
+                height: isInputFocused ? "0px" : "auto",
+                opacity: isInputFocused ? 0 : 1,
+                marginTop: isInputFocused ? "0px" : "8px",
+              }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              <span>AEKO can make mistakes. Check important info.</span>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
       </div>
+    </div>
     </TooltipProvider>
   );
 };
 
 export default AgentLLMPage;
+

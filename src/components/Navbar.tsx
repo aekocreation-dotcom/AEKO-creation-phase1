@@ -28,55 +28,45 @@ const Navbar = () => {
       style={{ background: 'transparent' }}
     >
       <div className="container mx-auto px-4 lg:px-6" style={{ maxWidth: '1100px' }}>
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           {/* Left Side - Logo */}
           <div className="flex items-center">
-            <a href="#" className="flex items-center gap-3 group">
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                {/* Perfect round white border */}
-                <div className="absolute inset-0 rounded-full border-3 border-white shadow-lg shadow-white/20 group-hover:shadow-white/40 transition-all duration-200" style={{ borderWidth: '3px' }} />
-                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
-                  <img 
-                    src={logoDark} 
-                    alt="AEKO" 
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200" 
-                  />
-                </div>
-              </div>
-              <div className="hidden lg:flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white">AEKO</span>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">.Ai</span>
-              </div>
+            <a href="#" className="flex items-center gap-2">
+              <img 
+                src={logoDark} 
+                alt="AEKO" 
+                className="w-8 h-8 object-contain" 
+              />
+              <span className="text-lg font-bold text-white">AEKO</span>
             </a>
           </div>
 
           {/* Right Side - All Nav Links + CTA */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-base md:text-lg font-semibold text-white/95 hover:text-white transition-all duration-200 hover:scale-105 relative group"
+                className="text-sm text-white/90 hover:text-white transition-colors duration-200"
               >
                 {link.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300" />
               </a>
             ))}
             <Button
               variant="ghost"
-              size="default"
+              size="sm"
               onClick={() => navigate("/auth/sign-in")}
-              className="text-base md:text-lg font-semibold text-white/95 hover:text-white hover:bg-white/10 px-5 py-2 rounded-lg transition-all duration-200"
+              className="text-white/90 hover:text-white hover:bg-white/10"
             >
               Sign In
             </Button>
             <Button
               variant="default"
-              size="default"
-              onClick={() => navigate("/auth/sign-in")}
-              className="text-base md:text-lg font-bold bg-white text-black hover:bg-white/90 px-8 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+              size="sm"
+              onClick={() => navigate("/dashboard/tools")}
+              className="bg-white text-black hover:bg-white/90"
             >
-              Launch
+              Start Creating
             </Button>
           </div>
 
@@ -125,10 +115,10 @@ const Navbar = () => {
                 className="w-full"
                 onClick={() => {
                   setIsOpen(false);
-                  navigate("/auth/sign-in");
+                  navigate("/dashboard/tools");
                 }}
               >
-                Launch
+                Start Creating
               </Button>
             </div>
           </div>
